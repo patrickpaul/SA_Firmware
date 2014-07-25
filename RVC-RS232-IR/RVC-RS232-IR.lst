@@ -1,0 +1,2301 @@
+CCS PCM C Compiler, Version 4.130, 13671               14-Oct-13 12:46
+
+               Filename: C:\SOURCE\PIC\RVC-RS232-IR\RVC-RS232-IR.lst
+
+               ROM used: 1491 words (73%)
+                         Largest free fragment is 557
+               RAM used: 34 (15%) at main() level
+                         144 (65%) worst case
+               Stack:    7 worst case (3 in main + 4 for interrupts)
+
+*
+0000:  NOP
+0001:  MOVLW  03
+0002:  MOVWF  0A
+0003:  GOTO   33F
+0004:  MOVWF  7F
+0005:  SWAPF  03,W
+0006:  CLRF   03
+0007:  MOVWF  21
+0008:  MOVF   7F,W
+0009:  MOVWF  20
+000A:  MOVF   0A,W
+000B:  MOVWF  27
+000C:  CLRF   0A
+000D:  SWAPF  20,F
+000E:  MOVF   04,W
+000F:  MOVWF  22
+0010:  MOVF   77,W
+0011:  MOVWF  23
+0012:  MOVF   78,W
+0013:  MOVWF  24
+0014:  MOVF   79,W
+0015:  MOVWF  25
+0016:  MOVF   7A,W
+0017:  MOVWF  26
+0018:  BCF    03.7
+0019:  BCF    03.5
+001A:  BTFSS  0B.4
+001B:  GOTO   01E
+001C:  BTFSC  0B.1
+001D:  GOTO   147
+001E:  MOVF   22,W
+001F:  MOVWF  04
+0020:  MOVF   23,W
+0021:  MOVWF  77
+0022:  MOVF   24,W
+0023:  MOVWF  78
+0024:  MOVF   25,W
+0025:  MOVWF  79
+0026:  MOVF   26,W
+0027:  MOVWF  7A
+0028:  MOVF   27,W
+0029:  MOVWF  0A
+002A:  SWAPF  21,W
+002B:  MOVWF  03
+002C:  SWAPF  7F,F
+002D:  SWAPF  7F,W
+002E:  RETFIE
+.................... #include <16F628A.h> 
+.................... //////// Standard Header file for the PIC16F628A device //////////////// 
+.................... #device PIC16F628A 
+.................... #list 
+....................  
+.................... #include <RVC-RS232-IR.h> 
+.................... #FUSES NOWDT                    //No Watch Dog Timer 
+.................... #FUSES NOPUT                    //No Power Up Timer 
+.................... #FUSES HS                       //High speed Osc (> 4mhz for PCM/PCH) (>10mhz for PCD) 
+.................... #FUSES MCLR                     //Master Clear pin enabled 
+.................... #FUSES NOBROWNOUT               //No brownout reset 
+.................... #FUSES NOLVP                    //No low voltage prgming, B3(PIC16) or B5(PIC18) used for I/O 
+.................... #FUSES NOCPD                    //No EE protection 
+.................... #FUSES NOPROTECT                //Code not protected from reading 
+....................  
+.................... #use delay(clock=20000000) 
+*
+002F:  MOVLW  D0
+0030:  MOVWF  04
+0031:  BCF    03.7
+0032:  MOVF   00,W
+0033:  BTFSC  03.2
+0034:  GOTO   042
+0035:  MOVLW  06
+0036:  MOVWF  78
+0037:  CLRF   77
+0038:  DECFSZ 77,F
+0039:  GOTO   038
+003A:  DECFSZ 78,F
+003B:  GOTO   037
+003C:  MOVLW  7B
+003D:  MOVWF  77
+003E:  DECFSZ 77,F
+003F:  GOTO   03E
+0040:  DECFSZ 00,F
+0041:  GOTO   035
+0042:  RETURN
+*
+01B3:  MOVLW  03
+01B4:  SUBWF  7D,F
+01B5:  BTFSS  03.0
+01B6:  GOTO   1C1
+01B7:  MOVLW  7D
+01B8:  MOVWF  04
+01B9:  BCF    03.7
+01BA:  MOVF   00,W
+01BB:  BTFSC  03.2
+01BC:  GOTO   1C1
+01BD:  GOTO   1BF
+01BE:  GOTO   1BF
+01BF:  DECFSZ 00,F
+01C0:  GOTO   1BE
+.................... #define LED PIN_A1 
+.................... #define DELAY 500 
+....................  
+.................... #use rs232(baud=9600,parity=N,xmit=PIN_B2,rcv=PIN_B1,bits=8,errors) 
+*
+0269:  BTFSS  0C.5
+026A:  GOTO   269
+026B:  MOVF   18,W
+026C:  MOVWF  29
+026D:  MOVF   1A,W
+026E:  MOVWF  78
+026F:  BTFSS  29.1
+0270:  GOTO   273
+0271:  BCF    18.4
+0272:  BSF    18.4
+.................... // DIGITAL POT (MICROCHIP MCP41010 
+....................  
+.................... #define SPI_ENABLE PIN_B6        
+.................... #define DPOT_SCLK PIN_B5        
+.................... #define DPOT_MOSI PIN_B4 
+....................  
+.................... #define DPOT_COMMAND 0x11 //Specific to Microchip MCP41010 
+....................  
+.................... #define POT_MAX 255  
+.................... #define POT_MIN 0 
+....................  
+....................  
+.................... #define VERSION_MAJOR 2 
+.................... #define VERSION_MINOR 0 
+....................  
+....................  
+.................... // VOLUME CONFIGURATION IN DECIBELS 
+....................  
+.................... unsigned int VOL_MUTE = 0; 
+.................... unsigned int VOL_MIN = 0; 
+.................... unsigned int VOL_MAX = 100; 
+.................... unsigned int VOL_BIG_STEP = 10; // MUST BE A MULTIPLE OF 5 AND DIVIDE INTO 100 OR THINGS BREAK! 
+.................... unsigned int VOL_SMALL_STEP = 5; 
+.................... signed int command_data = 0; 
+....................  
+....................  
+.................... // COMMANDS 
+....................  
+.................... #define COMMAND_START_BYTE 		0x02 // ASCII Start of Text 
+.................... #define COMMAND_END_BYTE 		0x03 // ASCII End of text 
+....................  
+.................... #define VOL_START_BYTE 			0x76 // v 
+.................... #define VOL_UP_BYTE 			0x75 // u 
+.................... #define VOL_UP_BYTE_SMALL		0x74 
+.................... #define VOL_DOWN_BYTE 			0x64 // d 
+.................... #define VOL_DOWN_BYTE_SMALL		0x63 
+.................... #define VOL_DISCRETE_START 		0x56 // V 
+....................  
+.................... #define MUTE_START_BYTE 		0x6D // m 
+.................... #define MUTE_TOGGLE_BYTE 		0x4D // M 
+.................... #define MUTE_FORCEMUTE_BYTE 	0x79 // y 
+.................... #define MUTE_FORCEUNMUTE_BYTE 	0x6E // n 
+....................  
+.................... #define DEBUG_START_BYTE		0x44 //	D 
+.................... #define DEBUG_GET_VERSION		0x56 // V 
+....................  
+.................... #define STATUS_BYTE 0x53 // S (sent after VOL_START_BYTE or MUTE_START_BYTE) 
+....................  
+.................... #define COMMAND_MAX_LENGTH 4 // INCLUDING END_BYTE 
+....................  
+.................... // COMMAND LIST FOR INTERNAL USE ONLY 
+....................  
+.................... #define COMMAND_VOL_UP			0x01 
+.................... #define COMMAND_VOL_DOWN		0x02 
+.................... #define COMMAND_VOL_DISCRETE	0x03 
+.................... #define COMMAND_VOL_STATUS		0x04 
+....................  
+.................... #define COMMAND_MUTE_TOGGLE		0x05 
+.................... #define COMMAND_FORCE_MUTE		0x06 
+.................... #define COMMAND_FORCE_UNMUTE	0x07 
+.................... #define COMMAND_MUTE_STATUS		0x08 
+....................  
+.................... #define COMMAND_GET_VERSION		0x09 
+....................  
+....................  
+.................... // DEBUG VERBOSE MODE 
+....................  
+.................... #define DEBUG 0 
+.................... #define DEBUG_IR 0 
+....................  
+....................  
+.................... // INFRARED 
+....................  
+.................... #define IR_INPUT PIN_B0                // Pin IR received connected to (must be an interrupt) 
+.................... #define IR_STATUS (!input(IR_INPUT))   // Invert the signal from the IR receiver 
+....................  
+.................... unsigned int current_volume = 0; // in dB 
+.................... unsigned int current_pot_setting = 0; 
+.................... signed int muted_volume = 0; 
+.................... int is_muted = 0; 
+.................... int startup_flag = 1; 
+.................... int is_small_step = 0; 
+.................... int get_IR_command(void); 
+.................... int get_serial_command(void); 
+....................  
+.................... typedef struct { 
+....................    int8 address; 
+....................    int8 command; 
+....................    int8 state; 
+.................... } IR_struct; 
+....................  
+.................... IR_struct IR; 
+....................  
+.................... #include <DPOT.c> 
+....................  
+.................... void set_digital_pot (int data) { 
+....................  
+....................    /* Software SPI implementation */ 
+....................  
+....................    BYTE i;  
+....................    BYTE cmd[2]; 
+....................     
+....................    cmd[0] = data; // Integer representation of volume to set (0-254) 
+*
+0043:  BSF    03.5
+0044:  MOVF   4C,W
+0045:  MOVWF  4E
+....................    cmd[1] = DPOT_COMMAND; // Specific command byte for target chip 
+0046:  MOVLW  11
+0047:  MOVWF  4F
+....................  
+....................    output_high(SPI_ENABLE); // Should already be high 
+0048:  BCF    06.6
+0049:  BCF    03.5
+004A:  BSF    06.6
+....................    output_low(DPOT_SCLK); // Should already be low 
+004B:  BSF    03.5
+004C:  BCF    06.5
+004D:  BCF    03.5
+004E:  BCF    06.5
+....................    delay_ms(1);  
+004F:  MOVLW  01
+0050:  BSF    03.5
+0051:  MOVWF  50
+0052:  BCF    03.5
+0053:  CALL   02F
+....................     
+....................    output_low(SPI_ENABLE); // Bring low to enable 
+0054:  BSF    03.5
+0055:  BCF    06.6
+0056:  BCF    03.5
+0057:  BCF    06.6
+....................    delay_ms(1); 
+0058:  MOVLW  01
+0059:  BSF    03.5
+005A:  MOVWF  50
+005B:  BCF    03.5
+005C:  CALL   02F
+....................     
+....................    for(i=1;i<=16;++i) {  
+005D:  MOVLW  01
+005E:  BSF    03.5
+005F:  MOVWF  4D
+0060:  MOVF   4D,W
+0061:  SUBLW  10
+0062:  BTFSS  03.0
+0063:  GOTO   07F
+....................       output_bit(DPOT_MOSI, shift_left(cmd,2,0)); // Shifts out a single bit (16-bits total) 
+0064:  BCF    03.0
+0065:  RLF    4E,F
+0066:  RLF    4F,F
+0067:  BTFSC  03.0
+0068:  GOTO   06D
+0069:  BCF    03.5
+006A:  BCF    06.4
+006B:  GOTO   06F
+006C:  BSF    03.5
+006D:  BCF    03.5
+006E:  BSF    06.4
+006F:  BSF    03.5
+0070:  BCF    06.4
+....................  
+....................       output_high(DPOT_SCLK);  
+0071:  BCF    06.5
+0072:  BCF    03.5
+0073:  BSF    06.5
+....................       delay_us(2);  
+0074:  MOVLW  03
+0075:  MOVWF  77
+0076:  DECFSZ 77,F
+0077:  GOTO   076
+....................       output_low(DPOT_SCLK);  
+0078:  BSF    03.5
+0079:  BCF    06.5
+007A:  BCF    03.5
+007B:  BCF    06.5
+....................    } 
+007C:  BSF    03.5
+007D:  INCF   4D,F
+007E:  GOTO   060
+....................     
+....................    output_high(SPI_ENABLE);  
+007F:  BCF    06.6
+0080:  BCF    03.5
+0081:  BSF    06.6
+....................    output_low(DPOT_MOSI);  
+0082:  BSF    03.5
+0083:  BCF    06.4
+0084:  BCF    03.5
+0085:  BCF    06.4
+....................    output_low(DPOT_SCLK);  
+0086:  BSF    03.5
+0087:  BCF    06.5
+0088:  BCF    03.5
+0089:  BCF    06.5
+.................... } 
+008A:  RETURN
+....................  
+.................... int volume_to_nearest_five() { 
+*
+0477:  CLRF   3D
+.................... 	 
+.................... 	int return_int = 0; 
+.................... 	if(current_volume % 5 == 0) { 
+0478:  MOVF   30,W
+0479:  BSF    03.5
+047A:  MOVWF  4C
+047B:  MOVLW  05
+047C:  MOVWF  4D
+*
+0491:  MOVF   77,F
+0492:  BTFSS  03.2
+0493:  GOTO   499
+.................... 		return current_volume; 
+0494:  BCF    03.5
+0495:  MOVF   30,W
+0496:  MOVWF  78
+0497:  GOTO   57B
+0498:  BSF    03.5
+.................... 	} 
+....................  
+.................... 	if(current_volume == 0) { 
+0499:  BCF    03.5
+049A:  MOVF   30,F
+049B:  BTFSS  03.2
+049C:  GOTO   49F
+.................... 		return_int = 0; 
+049D:  CLRF   3D
+.................... 	} else if(current_volume > 0 && current_volume <= 5) { 
+049E:  GOTO   579
+049F:  MOVF   30,F
+04A0:  BTFSC  03.2
+04A1:  GOTO   4A9
+04A2:  MOVF   30,W
+04A3:  SUBLW  05
+04A4:  BTFSS  03.0
+04A5:  GOTO   4A9
+.................... 		return_int = 5; 
+04A6:  MOVLW  05
+04A7:  MOVWF  3D
+.................... 	} else if (current_volume > 5 && current_volume <= 10) { 
+04A8:  GOTO   579
+04A9:  MOVF   30,W
+04AA:  SUBLW  05
+04AB:  BTFSC  03.0
+04AC:  GOTO   4B4
+04AD:  MOVF   30,W
+04AE:  SUBLW  0A
+04AF:  BTFSS  03.0
+04B0:  GOTO   4B4
+.................... 		return_int = 10; 
+04B1:  MOVLW  0A
+04B2:  MOVWF  3D
+.................... 	} else if (current_volume > 10 && current_volume <= 15) { 
+04B3:  GOTO   579
+04B4:  MOVF   30,W
+04B5:  SUBLW  0A
+04B6:  BTFSC  03.0
+04B7:  GOTO   4BF
+04B8:  MOVF   30,W
+04B9:  SUBLW  0F
+04BA:  BTFSS  03.0
+04BB:  GOTO   4BF
+.................... 		return_int = 15; 
+04BC:  MOVLW  0F
+04BD:  MOVWF  3D
+.................... 	} else if (current_volume > 15 && current_volume <= 20) { 
+04BE:  GOTO   579
+04BF:  MOVF   30,W
+04C0:  SUBLW  0F
+04C1:  BTFSC  03.0
+04C2:  GOTO   4CA
+04C3:  MOVF   30,W
+04C4:  SUBLW  14
+04C5:  BTFSS  03.0
+04C6:  GOTO   4CA
+.................... 		return_int = 20; 
+04C7:  MOVLW  14
+04C8:  MOVWF  3D
+.................... 	} else if (current_volume > 20 && current_volume <= 25) { 
+04C9:  GOTO   579
+04CA:  MOVF   30,W
+04CB:  SUBLW  14
+04CC:  BTFSC  03.0
+04CD:  GOTO   4D5
+04CE:  MOVF   30,W
+04CF:  SUBLW  19
+04D0:  BTFSS  03.0
+04D1:  GOTO   4D5
+.................... 		return_int = 25; 
+04D2:  MOVLW  19
+04D3:  MOVWF  3D
+.................... 	} else if (current_volume > 25 && current_volume <= 30) { 
+04D4:  GOTO   579
+04D5:  MOVF   30,W
+04D6:  SUBLW  19
+04D7:  BTFSC  03.0
+04D8:  GOTO   4E0
+04D9:  MOVF   30,W
+04DA:  SUBLW  1E
+04DB:  BTFSS  03.0
+04DC:  GOTO   4E0
+.................... 		return_int = 30; 
+04DD:  MOVLW  1E
+04DE:  MOVWF  3D
+.................... 	} else if (current_volume > 30 && current_volume <= 35) { 
+04DF:  GOTO   579
+04E0:  MOVF   30,W
+04E1:  SUBLW  1E
+04E2:  BTFSC  03.0
+04E3:  GOTO   4EB
+04E4:  MOVF   30,W
+04E5:  SUBLW  23
+04E6:  BTFSS  03.0
+04E7:  GOTO   4EB
+.................... 		return_int = 35; 
+04E8:  MOVLW  23
+04E9:  MOVWF  3D
+.................... 	} else if (current_volume > 35 && current_volume <= 40) { 
+04EA:  GOTO   579
+04EB:  MOVF   30,W
+04EC:  SUBLW  23
+04ED:  BTFSC  03.0
+04EE:  GOTO   4F6
+04EF:  MOVF   30,W
+04F0:  SUBLW  28
+04F1:  BTFSS  03.0
+04F2:  GOTO   4F6
+.................... 		return_int = 40; 
+04F3:  MOVLW  28
+04F4:  MOVWF  3D
+.................... 	} else if (current_volume > 40 && current_volume <= 45) { 
+04F5:  GOTO   579
+04F6:  MOVF   30,W
+04F7:  SUBLW  28
+04F8:  BTFSC  03.0
+04F9:  GOTO   501
+04FA:  MOVF   30,W
+04FB:  SUBLW  2D
+04FC:  BTFSS  03.0
+04FD:  GOTO   501
+.................... 		return_int = 45; 
+04FE:  MOVLW  2D
+04FF:  MOVWF  3D
+.................... 	} else if (current_volume > 45 && current_volume <= 50) { 
+0500:  GOTO   579
+0501:  MOVF   30,W
+0502:  SUBLW  2D
+0503:  BTFSC  03.0
+0504:  GOTO   50C
+0505:  MOVF   30,W
+0506:  SUBLW  32
+0507:  BTFSS  03.0
+0508:  GOTO   50C
+.................... 		return_int = 50; 
+0509:  MOVLW  32
+050A:  MOVWF  3D
+.................... 	} else if (current_volume > 50 && current_volume <= 55) { 
+050B:  GOTO   579
+050C:  MOVF   30,W
+050D:  SUBLW  32
+050E:  BTFSC  03.0
+050F:  GOTO   517
+0510:  MOVF   30,W
+0511:  SUBLW  37
+0512:  BTFSS  03.0
+0513:  GOTO   517
+.................... 		return_int = 55; 
+0514:  MOVLW  37
+0515:  MOVWF  3D
+.................... 	} else if (current_volume > 55 && current_volume <= 60) { 
+0516:  GOTO   579
+0517:  MOVF   30,W
+0518:  SUBLW  37
+0519:  BTFSC  03.0
+051A:  GOTO   522
+051B:  MOVF   30,W
+051C:  SUBLW  3C
+051D:  BTFSS  03.0
+051E:  GOTO   522
+.................... 		return_int = 60; 
+051F:  MOVLW  3C
+0520:  MOVWF  3D
+.................... 	} else if (current_volume > 60 && current_volume <= 65) { 
+0521:  GOTO   579
+0522:  MOVF   30,W
+0523:  SUBLW  3C
+0524:  BTFSC  03.0
+0525:  GOTO   52D
+0526:  MOVF   30,W
+0527:  SUBLW  41
+0528:  BTFSS  03.0
+0529:  GOTO   52D
+.................... 		return_int = 65; 
+052A:  MOVLW  41
+052B:  MOVWF  3D
+.................... 	} else if (current_volume > 65 && current_volume <= 70) { 
+052C:  GOTO   579
+052D:  MOVF   30,W
+052E:  SUBLW  41
+052F:  BTFSC  03.0
+0530:  GOTO   538
+0531:  MOVF   30,W
+0532:  SUBLW  46
+0533:  BTFSS  03.0
+0534:  GOTO   538
+.................... 		return_int = 70; 
+0535:  MOVLW  46
+0536:  MOVWF  3D
+.................... 	} else if (current_volume > 70 && current_volume <= 75) { 
+0537:  GOTO   579
+0538:  MOVF   30,W
+0539:  SUBLW  46
+053A:  BTFSC  03.0
+053B:  GOTO   543
+053C:  MOVF   30,W
+053D:  SUBLW  4B
+053E:  BTFSS  03.0
+053F:  GOTO   543
+.................... 		return_int = 75; 
+0540:  MOVLW  4B
+0541:  MOVWF  3D
+.................... 	} else if (current_volume > 75 && current_volume <= 80) { 
+0542:  GOTO   579
+0543:  MOVF   30,W
+0544:  SUBLW  4B
+0545:  BTFSC  03.0
+0546:  GOTO   54E
+0547:  MOVF   30,W
+0548:  SUBLW  50
+0549:  BTFSS  03.0
+054A:  GOTO   54E
+.................... 		return_int = 80; 
+054B:  MOVLW  50
+054C:  MOVWF  3D
+.................... 	} else if (current_volume > 80 && current_volume <= 85) { 
+054D:  GOTO   579
+054E:  MOVF   30,W
+054F:  SUBLW  50
+0550:  BTFSC  03.0
+0551:  GOTO   559
+0552:  MOVF   30,W
+0553:  SUBLW  55
+0554:  BTFSS  03.0
+0555:  GOTO   559
+.................... 		return_int = 85; 
+0556:  MOVLW  55
+0557:  MOVWF  3D
+.................... 	} else if (current_volume > 85 && current_volume <= 90) { 
+0558:  GOTO   579
+0559:  MOVF   30,W
+055A:  SUBLW  55
+055B:  BTFSC  03.0
+055C:  GOTO   564
+055D:  MOVF   30,W
+055E:  SUBLW  5A
+055F:  BTFSS  03.0
+0560:  GOTO   564
+.................... 		return_int = 90; 
+0561:  MOVLW  5A
+0562:  MOVWF  3D
+.................... 	} else if (current_volume > 90 && current_volume <= 95) { 
+0563:  GOTO   579
+0564:  MOVF   30,W
+0565:  SUBLW  5A
+0566:  BTFSC  03.0
+0567:  GOTO   56F
+0568:  MOVF   30,W
+0569:  SUBLW  5F
+056A:  BTFSS  03.0
+056B:  GOTO   56F
+.................... 		return_int = 95; 
+056C:  MOVLW  5F
+056D:  MOVWF  3D
+.................... 	} else if (current_volume > 95 && current_volume <= 100) { 
+056E:  GOTO   579
+056F:  MOVF   30,W
+0570:  SUBLW  5F
+0571:  BTFSC  03.0
+0572:  GOTO   579
+0573:  MOVF   30,W
+0574:  SUBLW  64
+0575:  BTFSS  03.0
+0576:  GOTO   579
+.................... 		return_int = 100; 
+0577:  MOVLW  64
+0578:  MOVWF  3D
+.................... 	} 
+....................  
+.................... 	return return_int; 
+0579:  MOVF   3D,W
+057A:  MOVWF  78
+....................  
+.................... } 
+....................  
+.................... void saveAndSetVol() { 
+*
+008B:  CLRF   61
+008C:  CLRF   62
+008D:  CLRF   63
+....................  
+.................... 	unsigned int log_index = 0; 
+.................... 	int eeprom_volume = 0; 
+.................... 	int eeprom_mute = 0; 
+....................  
+.................... 	log_index = current_volume / 5; 
+008E:  MOVF   30,W
+008F:  BSF    03.5
+0090:  MOVWF  4C
+0091:  MOVLW  05
+0092:  MOVWF  4D
+*
+00A7:  MOVF   78,W
+00A8:  BCF    03.5
+00A9:  MOVWF  61
+.................... 	// Calculated in Excel with (255 - (255 * POWER(VOL_PERCENT, 3.3)) 
+.................... 	// Actual formula is (255 - (255 * VOL_PERCENT^3.3)) 
+.................... 	// !!CHANGED 7/7/11 to have 10% be about 1.5V due to the diode dropout.. 
+.................... 	// New formula is (255 - (26 + 229*VOL_PERCENT^3.3)) 
+.................... 	//  --> ALSO WRITTEN AS (255 - (26 + 229 * POWER(VOL_PERCENT, 3.3)) 
+....................  
+.................... 	unsigned int shaped_pot_values[21] = {255,205,205,205,204,203,201,199,195,190,184,175,165,156,142,126,107,85,60,32,0}; 
+00AA:  MOVLW  FF
+00AB:  BSF    03.5
+00AC:  MOVWF  20
+00AD:  MOVLW  CD
+00AE:  MOVWF  21
+00AF:  MOVWF  22
+00B0:  MOVWF  23
+00B1:  MOVLW  CC
+00B2:  MOVWF  24
+00B3:  MOVLW  CB
+00B4:  MOVWF  25
+00B5:  MOVLW  C9
+00B6:  MOVWF  26
+00B7:  MOVLW  C7
+00B8:  MOVWF  27
+00B9:  MOVLW  C3
+00BA:  MOVWF  28
+00BB:  MOVLW  BE
+00BC:  MOVWF  29
+00BD:  MOVLW  B8
+00BE:  MOVWF  2A
+00BF:  MOVLW  AF
+00C0:  MOVWF  2B
+00C1:  MOVLW  A5
+00C2:  MOVWF  2C
+00C3:  MOVLW  9C
+00C4:  MOVWF  2D
+00C5:  MOVLW  8E
+00C6:  MOVWF  2E
+00C7:  MOVLW  7E
+00C8:  MOVWF  2F
+00C9:  MOVLW  6B
+00CA:  MOVWF  30
+00CB:  MOVLW  55
+00CC:  MOVWF  31
+00CD:  MOVLW  3C
+00CE:  MOVWF  32
+00CF:  MOVLW  20
+00D0:  MOVWF  33
+00D1:  CLRF   34
+....................  
+.................... 	current_pot_setting = shaped_pot_values[log_index]; 
+00D2:  MOVLW  A0
+00D3:  BCF    03.5
+00D4:  ADDWF  61,W
+00D5:  MOVWF  04
+00D6:  BCF    03.7
+00D7:  MOVF   00,W
+00D8:  MOVWF  31
+....................  
+.................... 	if(DEBUG) { 
+.................... 		//printf("Setting volume to [POT]%u : [CV]%u\n\r",current_pot_setting,current_volume); 
+.................... 	} 
+....................  
+.................... 	if(startup_flag == 1) { 
+00D9:  DECFSZ 34,W
+00DA:  GOTO   0F6
+.................... 	// IF THIS IS STARTING UP.. VOLUME WILL FADE IN. HIGH VOLUME WILL TAKE ABOUT HALF A SECOND 
+.................... 	unsigned int x = 255; 
+00DB:  MOVLW  FF
+00DC:  MOVWF  64
+....................  
+.................... 		while(x > current_pot_setting) { 
+00DD:  MOVF   64,W
+00DE:  SUBWF  31,W
+00DF:  BTFSC  03.0
+00E0:  GOTO   0F4
+.................... 			 
+.................... 			x -= 5; 
+00E1:  MOVLW  05
+00E2:  SUBWF  64,F
+.................... 			if(x < current_pot_setting) { 
+00E3:  MOVF   31,W
+00E4:  SUBWF  64,W
+00E5:  BTFSC  03.0
+00E6:  GOTO   0E9
+.................... 				x = current_pot_setting; 
+00E7:  MOVF   31,W
+00E8:  MOVWF  64
+.................... 			} 
+....................  
+.................... 			set_digital_pot(x); // Finally set the digital pot 
+00E9:  MOVF   64,W
+00EA:  BSF    03.5
+00EB:  MOVWF  4C
+00EC:  BCF    03.5
+00ED:  CALL   043
+.................... 			delay_ms(10); 
+00EE:  MOVLW  0A
+00EF:  BSF    03.5
+00F0:  MOVWF  50
+00F1:  BCF    03.5
+00F2:  CALL   02F
+....................  
+.................... 			 
+.................... 		} 
+00F3:  GOTO   0DD
+....................  
+.................... 		startup_flag = 0; 
+00F4:  CLRF   34
+.................... 	} else { 
+00F5:  GOTO   136
+....................  
+.................... 		set_digital_pot(current_pot_setting); // Finally set the digital pot 
+00F6:  MOVF   31,W
+00F7:  BSF    03.5
+00F8:  MOVWF  4C
+00F9:  BCF    03.5
+00FA:  CALL   043
+.................... 		//set_digital_pot(current_volume); 	 
+.................... 		if(is_muted == 1) { 
+00FB:  DECFSZ 33,W
+00FC:  GOTO   100
+.................... 			eeprom_volume = muted_volume; 
+00FD:  MOVF   32,W
+00FE:  MOVWF  62
+.................... 		} else { 
+00FF:  GOTO   102
+.................... 			eeprom_volume = current_volume; 
+0100:  MOVF   30,W
+0101:  MOVWF  62
+.................... 		} 
+....................  
+.................... 		write_eeprom(10,eeprom_volume); // Save volume in EEPROM for power cycle 
+0102:  MOVLW  0A
+0103:  BSF    03.5
+0104:  MOVWF  1B
+0105:  BCF    03.5
+0106:  MOVF   62,W
+0107:  BSF    03.5
+0108:  MOVWF  1A
+0109:  BCF    1C.7
+010A:  BSF    1C.2
+010B:  BCF    03.5
+010C:  MOVF   0B,W
+010D:  MOVWF  77
+010E:  BCF    0B.7
+010F:  BSF    03.5
+0110:  MOVLW  55
+0111:  MOVWF  1D
+0112:  MOVLW  AA
+0113:  MOVWF  1D
+0114:  BSF    1C.1
+0115:  BTFSC  1C.1
+0116:  GOTO   115
+0117:  BCF    1C.2
+0118:  MOVF   77,W
+0119:  BCF    03.5
+011A:  IORWF  0B,F
+.................... 		eeprom_mute = is_muted; 
+011B:  MOVF   33,W
+011C:  MOVWF  63
+.................... 		write_eeprom(12,eeprom_mute); // Save volume in EEPROM for power cycle 
+011D:  MOVLW  0C
+011E:  BSF    03.5
+011F:  MOVWF  1B
+0120:  BCF    03.5
+0121:  MOVF   63,W
+0122:  BSF    03.5
+0123:  MOVWF  1A
+0124:  BCF    1C.7
+0125:  BSF    1C.2
+0126:  BCF    03.5
+0127:  MOVF   0B,W
+0128:  MOVWF  77
+0129:  BCF    0B.7
+012A:  BSF    03.5
+012B:  MOVLW  55
+012C:  MOVWF  1D
+012D:  MOVLW  AA
+012E:  MOVWF  1D
+012F:  BSF    1C.1
+0130:  BTFSC  1C.1
+0131:  GOTO   130
+0132:  BCF    1C.2
+0133:  MOVF   77,W
+0134:  BCF    03.5
+0135:  IORWF  0B,F
+....................  
+.................... 	} 
+....................  
+....................  
+.................... 	putc(COMMAND_START_BYTE); 
+0136:  MOVLW  02
+0137:  BTFSS  0C.4
+0138:  GOTO   137
+0139:  MOVWF  19
+.................... 	putc(VOL_START_BYTE); 
+013A:  MOVLW  76
+013B:  BTFSS  0C.4
+013C:  GOTO   13B
+013D:  MOVWF  19
+.................... 	putc(current_volume); 
+013E:  MOVF   30,W
+013F:  BTFSS  0C.4
+0140:  GOTO   13F
+0141:  MOVWF  19
+.................... 	putc(COMMAND_END_BYTE); 
+0142:  MOVLW  03
+0143:  BTFSS  0C.4
+0144:  GOTO   143
+0145:  MOVWF  19
+.................... 	 
+.................... } 
+0146:  RETURN
+....................  
+.................... void vol_discrete() { 
+.................... 	 
+.................... 	// ADD A CHECK HERE BUT IT IS CURRENTLY DONE IN RS232.c 
+.................... 	current_volume = command_data; 
+*
+0475:  MOVF   2F,W
+0476:  MOVWF  30
+.................... 	current_volume = volume_to_nearest_five(); 
+*
+057B:  MOVF   78,W
+057C:  MOVWF  30
+057D:  CLRF   28
+057E:  BTFSC  0B.7
+057F:  BSF    28.7
+0580:  BCF    0B.7
+.................... 	saveAndSetVol(); 
+0581:  CALL   08B
+0582:  BTFSC  28.7
+0583:  BSF    0B.7
+0584:  NOP
+....................  
+.................... } 
+....................  
+.................... void vol_up() { 
+.................... 	 
+.................... 	if(is_muted == 1) { 
+*
+01E3:  DECFSZ 33,W
+01E4:  GOTO   1E8
+*
+0400:  DECFSZ 33,W
+0401:  GOTO   405
+.................... 		is_muted = 0; 
+*
+01E5:  CLRF   33
+*
+0402:  CLRF   33
+.................... 		current_volume = muted_volume; 
+*
+01E6:  MOVF   32,W
+01E7:  MOVWF  30
+*
+0403:  MOVF   32,W
+0404:  MOVWF  30
+.................... 	} 
+.................... 	if(is_small_step == 1) { 
+*
+01E8:  DECFSZ 35,W
+01E9:  GOTO   1F8
+*
+0405:  DECFSZ 35,W
+0406:  GOTO   415
+.................... 		if((current_volume + VOL_SMALL_STEP) >= VOL_MAX) { 
+*
+01EA:  MOVF   2E,W
+01EB:  ADDWF  30,W
+01EC:  SUBWF  2C,W
+01ED:  BTFSC  03.2
+01EE:  GOTO   1F1
+01EF:  BTFSC  03.0
+01F0:  GOTO   1F4
+*
+0407:  MOVF   2E,W
+0408:  ADDWF  30,W
+0409:  SUBWF  2C,W
+040A:  BTFSC  03.2
+040B:  GOTO   40E
+040C:  BTFSC  03.0
+040D:  GOTO   411
+.................... 			current_volume = VOL_MAX; 
+*
+01F1:  MOVF   2C,W
+01F2:  MOVWF  30
+*
+040E:  MOVF   2C,W
+040F:  MOVWF  30
+.................... 		} else { 
+*
+01F3:  GOTO   1F6
+*
+0410:  GOTO   413
+.................... 			current_volume += VOL_SMALL_STEP; 
+*
+01F4:  MOVF   2E,W
+01F5:  ADDWF  30,F
+*
+0411:  MOVF   2E,W
+0412:  ADDWF  30,F
+.................... 		} 
+....................  
+.................... 		is_small_step = 0; 
+*
+01F6:  CLRF   35
+*
+0413:  CLRF   35
+.................... 	} else { 
+*
+01F7:  GOTO   204
+*
+0414:  GOTO   421
+.................... 		if((current_volume + VOL_BIG_STEP) >= VOL_MAX) { 
+*
+01F8:  MOVF   2D,W
+01F9:  ADDWF  30,W
+01FA:  SUBWF  2C,W
+01FB:  BTFSC  03.2
+01FC:  GOTO   1FF
+01FD:  BTFSC  03.0
+01FE:  GOTO   202
+*
+0415:  MOVF   2D,W
+0416:  ADDWF  30,W
+0417:  SUBWF  2C,W
+0418:  BTFSC  03.2
+0419:  GOTO   41C
+041A:  BTFSC  03.0
+041B:  GOTO   41F
+.................... 			current_volume = VOL_MAX; 
+*
+01FF:  MOVF   2C,W
+0200:  MOVWF  30
+*
+041C:  MOVF   2C,W
+041D:  MOVWF  30
+.................... 		} else { 
+*
+0201:  GOTO   204
+*
+041E:  GOTO   421
+.................... 			current_volume += VOL_BIG_STEP; 
+*
+0202:  MOVF   2D,W
+0203:  ADDWF  30,F
+*
+041F:  MOVF   2D,W
+0420:  ADDWF  30,F
+.................... 		} 
+.................... 	} 
+....................     
+.................... 	saveAndSetVol(); 
+*
+0204:  CALL   08B
+0205:  NOP
+*
+0421:  CALL   08B
+0422:  NOP
+.................... } 
+....................  
+.................... void vol_down() { 
+.................... 	 
+.................... 	if(is_muted == 1) { 
+*
+020E:  DECFSZ 33,W
+020F:  GOTO   213
+*
+0424:  DECFSZ 33,W
+0425:  GOTO   429
+.................... 		is_muted = 0; 
+*
+0210:  CLRF   33
+*
+0426:  CLRF   33
+.................... 		current_volume = muted_volume; 
+*
+0211:  MOVF   32,W
+0212:  MOVWF  30
+*
+0427:  MOVF   32,W
+0428:  MOVWF  30
+.................... 	} 
+....................  
+.................... 	if(is_small_step == 1) { 
+*
+0213:  DECFSZ 35,W
+0214:  GOTO   220
+*
+0429:  DECFSZ 35,W
+042A:  GOTO   436
+.................... 		if(current_volume < VOL_SMALL_STEP) { 
+*
+0215:  MOVF   2E,W
+0216:  SUBWF  30,W
+0217:  BTFSC  03.0
+0218:  GOTO   21C
+*
+042B:  MOVF   2E,W
+042C:  SUBWF  30,W
+042D:  BTFSC  03.0
+042E:  GOTO   432
+.................... 			current_volume = VOL_MIN; 
+*
+0219:  MOVF   2B,W
+021A:  MOVWF  30
+*
+042F:  MOVF   2B,W
+0430:  MOVWF  30
+.................... 		} else { 
+*
+021B:  GOTO   21E
+*
+0431:  GOTO   434
+.................... 			current_volume -= VOL_SMALL_STEP; 
+*
+021C:  MOVF   2E,W
+021D:  SUBWF  30,F
+*
+0432:  MOVF   2E,W
+0433:  SUBWF  30,F
+.................... 		} 
+....................  
+.................... 		is_small_step = 0; 
+*
+021E:  CLRF   35
+*
+0434:  CLRF   35
+.................... 	} else { 
+*
+021F:  GOTO   229
+*
+0435:  GOTO   43F
+.................... 		if(current_volume < VOL_BIG_STEP) { 
+*
+0220:  MOVF   2D,W
+0221:  SUBWF  30,W
+0222:  BTFSC  03.0
+0223:  GOTO   227
+*
+0436:  MOVF   2D,W
+0437:  SUBWF  30,W
+0438:  BTFSC  03.0
+0439:  GOTO   43D
+.................... 			current_volume = VOL_MIN; 
+*
+0224:  MOVF   2B,W
+0225:  MOVWF  30
+*
+043A:  MOVF   2B,W
+043B:  MOVWF  30
+.................... 		} else { 
+*
+0226:  GOTO   229
+*
+043C:  GOTO   43F
+.................... 			current_volume -= VOL_BIG_STEP; 
+*
+0227:  MOVF   2D,W
+0228:  SUBWF  30,F
+*
+043D:  MOVF   2D,W
+043E:  SUBWF  30,F
+.................... 		} 
+.................... 	} 
+....................     
+.................... 	saveAndSetVol(); 
+*
+0229:  CALL   08B
+022A:  NOP
+*
+043F:  CALL   08B
+0440:  NOP
+.................... } 
+....................  
+.................... void mute_forcemute() { 
+.................... 	if(is_muted) { 
+*
+0452:  MOVF   33,F
+0453:  BTFSC  03.2
+0454:  GOTO   456
+.................... 		//if(DEBUG) { printf("ALREADY MUTED\n\r"); } 
+.................... 		return; 
+0455:  GOTO   463
+.................... 	} 
+.................... 	//if(DEBUG) { printf("Mute ON\n\r"); } 
+.................... 	is_muted = 1; 
+0456:  MOVLW  01
+0457:  MOVWF  33
+....................    	muted_volume = current_volume; 
+0458:  MOVF   30,W
+0459:  MOVWF  32
+.................... 	current_volume = VOL_MUTE; 
+045A:  MOVF   2A,W
+045B:  MOVWF  30
+045C:  CLRF   28
+045D:  BTFSC  0B.7
+045E:  BSF    28.7
+045F:  BCF    0B.7
+.................... 	saveAndSetVol(); 
+0460:  CALL   08B
+0461:  BTFSC  28.7
+0462:  BSF    0B.7
+0463:  NOP
+.................... } 
+....................  
+.................... void mute_forceunmute() { 
+.................... 	if(!is_muted) { 
+*
+0465:  MOVF   33,F
+0466:  BTFSS  03.2
+0467:  GOTO   469
+.................... 		//if(DEBUG) { printf("ALREADY UNMUTED\n\r"); } 
+.................... 		return; 
+0468:  GOTO   473
+.................... 	} 
+.................... 	//if(DEBUG) { printf("Mute OFF\n\r"); } 
+.................... 	is_muted = 0; 
+0469:  CLRF   33
+....................    	current_volume = muted_volume; 
+046A:  MOVF   32,W
+046B:  MOVWF  30
+046C:  CLRF   28
+046D:  BTFSC  0B.7
+046E:  BSF    28.7
+046F:  BCF    0B.7
+.................... 	saveAndSetVol(); 
+0470:  CALL   08B
+0471:  BTFSC  28.7
+0472:  BSF    0B.7
+0473:  NOP
+.................... } 
+....................  
+.................... void mute_toggle() { 
+....................  
+.................... 	if(is_muted) { 
+*
+0233:  MOVF   33,F
+0234:  BTFSC  03.2
+0235:  GOTO   23A
+*
+0442:  MOVF   33,F
+0443:  BTFSC  03.2
+0444:  GOTO   449
+.................... 		//if(DEBUG) { printf("MUTE OFF\n\r"); } 
+.................... 		is_muted = 0; 
+*
+0236:  CLRF   33
+*
+0445:  CLRF   33
+....................    		current_volume = muted_volume; 
+*
+0237:  MOVF   32,W
+0238:  MOVWF  30
+*
+0446:  MOVF   32,W
+0447:  MOVWF  30
+....................  	} else { 
+*
+0239:  GOTO   240
+*
+0448:  GOTO   44F
+.................... 		//if(DEBUG) { printf("MUTE ON\n\r"); } 
+.................... 		is_muted = 1; 
+*
+023A:  MOVLW  01
+023B:  MOVWF  33
+*
+0449:  MOVLW  01
+044A:  MOVWF  33
+....................    		muted_volume = current_volume; 
+*
+023C:  MOVF   30,W
+023D:  MOVWF  32
+*
+044B:  MOVF   30,W
+044C:  MOVWF  32
+.................... 		current_volume = VOL_MUTE; 
+*
+023E:  MOVF   2A,W
+023F:  MOVWF  30
+*
+044D:  MOVF   2A,W
+044E:  MOVWF  30
+.................... 	} 
+.................... 	  	 
+.................... 	saveAndSetVol(); 
+*
+0240:  CALL   08B
+0241:  NOP
+*
+044F:  CALL   08B
+0450:  NOP
+....................  
+....................    	 
+.................... } 
+....................  
+.................... #include <IR.c> 
+.................... int get_RC5_command(void) 
+.................... { 
+....................     
+....................    	int16 tmp,t; 
+....................    	int i; 
+....................    	int inp; 
+....................     
+....................    	disable_interrupts(INT_EXT); 
+*
+0147:  BCF    0B.4
+.................... 	// First measure the start bit to see if we have RC-5 protocol 
+....................     
+....................    	set_timer1(0); // Each tick is 1.6uS 
+0148:  CLRF   0F
+0149:  CLRF   0E
+....................    	while(IR_STATUS == 1); 
+014A:  BSF    03.5
+014B:  BSF    06.0
+014C:  BCF    03.5
+014D:  BTFSS  06.0
+014E:  GOTO   14A
+....................    	t=get_timer1(); 
+014F:  MOVF   0F,W
+0150:  MOVWF  7A
+0151:  MOVF   0E,W
+0152:  MOVWF  77
+0153:  MOVF   0F,W
+0154:  SUBWF  7A,W
+0155:  BTFSS  03.2
+0156:  GOTO   14F
+0157:  MOVF   77,W
+0158:  MOVWF  5D
+0159:  MOVF   7A,W
+015A:  MOVWF  5E
+....................     
+....................    	if ((t<400) || (t>800)) { 
+015B:  MOVF   5E,W
+015C:  SUBLW  01
+015D:  BTFSS  03.0
+015E:  GOTO   165
+015F:  BTFSS  03.2
+0160:  GOTO   170
+0161:  MOVF   5D,W
+0162:  SUBLW  8F
+0163:  BTFSC  03.0
+0164:  GOTO   170
+0165:  MOVF   5E,W
+0166:  SUBLW  02
+0167:  BTFSC  03.0
+0168:  GOTO   174
+0169:  XORLW  FF
+016A:  BTFSS  03.2
+016B:  GOTO   170
+016C:  MOVF   5D,W
+016D:  SUBLW  20
+016E:  BTFSC  03.0
+016F:  GOTO   174
+.................... 		enable_interrupts(INT_EXT); 
+0170:  BSF    0B.4
+.................... 		return 0;   // Not RC-5 protocol, escape 
+0171:  MOVLW  00
+0172:  MOVWF  78
+0173:  GOTO   24B
+.................... 	} 
+....................     
+....................    // Get remaining bits 
+....................    for (i=0;i<13;i++) 
+0174:  CLRF   5F
+0175:  MOVF   5F,W
+0176:  SUBLW  0C
+0177:  BTFSS  03.0
+0178:  GOTO   1C5
+....................    { 
+....................       inp = IR_STATUS; // Get the high/low state on first half of the bit 
+0179:  BSF    03.5
+017A:  BSF    06.0
+017B:  BCF    03.5
+017C:  CLRF   60
+017D:  BTFSS  06.0
+017E:  INCF   60,F
+....................       set_timer1(0); 
+017F:  CLRF   0F
+0180:  CLRF   0E
+....................  
+....................       while (IR_STATUS==inp) 
+....................       { 
+0181:  BSF    03.5
+0182:  BSF    06.0
+0183:  MOVLW  00
+0184:  BCF    03.5
+0185:  BTFSS  06.0
+0186:  MOVLW  01
+0187:  SUBWF  60,W
+0188:  BTFSS  03.2
+0189:  GOTO   1A6
+....................          t=get_timer1(); 
+018A:  MOVF   0F,W
+018B:  MOVWF  7A
+018C:  MOVF   0E,W
+018D:  MOVWF  77
+018E:  MOVF   0F,W
+018F:  SUBWF  7A,W
+0190:  BTFSS  03.2
+0191:  GOTO   18A
+0192:  MOVF   77,W
+0193:  MOVWF  5D
+0194:  MOVF   7A,W
+0195:  MOVWF  5E
+....................          if (t>800) { 
+0196:  MOVF   5E,W
+0197:  SUBLW  02
+0198:  BTFSC  03.0
+0199:  GOTO   1A5
+019A:  XORLW  FF
+019B:  BTFSS  03.2
+019C:  GOTO   1A1
+019D:  MOVF   5D,W
+019E:  SUBLW  20
+019F:  BTFSC  03.0
+01A0:  GOTO   1A5
+....................              
+.................... 			enable_interrupts(INT_EXT); 
+01A1:  BSF    0B.4
+.................... 			return 0; // Not RC-5 protocol, escape 
+01A2:  MOVLW  00
+01A3:  MOVWF  78
+01A4:  GOTO   24B
+....................          } 
+....................       } 
+01A5:  GOTO   181
+....................  
+....................       tmp<<=1; // Shift over one byte 
+01A6:  BCF    03.0
+01A7:  RLF    5B,F
+01A8:  RLF    5C,F
+....................  
+....................       if (inp==0) tmp++; 
+01A9:  MOVF   60,F
+01AA:  BTFSS  03.2
+01AB:  GOTO   1AF
+01AC:  INCF   5B,F
+01AD:  BTFSC  03.2
+01AE:  INCF   5C,F
+.................... 	 
+....................        
+.................... 		delay_us(900); // Skip second half of bit  
+01AF:  MOVLW  04
+01B0:  MOVWF  61
+01B1:  MOVLW  E0
+01B2:  MOVWF  7D
+*
+01C1:  DECFSZ 61,F
+01C2:  GOTO   1B1
+....................    } 
+01C3:  INCF   5F,F
+01C4:  GOTO   175
+....................     
+....................    tmp = tmp & 0x7FF; // Remove toggle and start bits 
+01C5:  MOVLW  07
+01C6:  ANDWF  5C,F
+....................  
+....................    // Get 6-bit command from LSB side of transmission 
+....................    IR.command = tmp & 0x3F; 
+01C7:  MOVF   5B,W
+01C8:  ANDLW  3F
+01C9:  MOVWF  37
+....................     
+....................    tmp>>=6; 
+01CA:  RRF    5C,F
+01CB:  RRF    5B,F
+01CC:  RRF    5C,F
+01CD:  RRF    5B,F
+01CE:  RRF    5C,F
+01CF:  RRF    5B,F
+01D0:  RRF    5C,F
+01D1:  RRF    5B,F
+01D2:  RRF    5C,F
+01D3:  RRF    5B,F
+01D4:  RRF    5C,F
+01D5:  RRF    5B,F
+01D6:  MOVLW  03
+01D7:  ANDWF  5C,F
+....................    // Get 5-bit address from rest of transmission 
+....................    IR.address = tmp & 0xff; 
+01D8:  MOVF   5B,W
+01D9:  MOVWF  36
+....................  
+....................    // Successful reception 
+....................    IR.state = 1; 
+01DA:  MOVLW  01
+01DB:  MOVWF  38
+....................  
+....................     
+....................    // Return OR we can do change_vol() action here 
+....................    if(DEBUG_IR) { 
+.................... 		//printf("IR RECEIVED - Address: %u, Command: %u\n\r",IR.address,IR.command); 
+....................    } 
+....................     
+.................... 	if(IR.address == 0 && IR.command == 16) { 
+01DC:  MOVF   36,F
+01DD:  BTFSS  03.2
+01DE:  GOTO   207
+01DF:  MOVF   37,W
+01E0:  SUBLW  10
+01E1:  BTFSS  03.2
+01E2:  GOTO   207
+....................     	vol_up(); 
+.................... 		//if(DEBUG_IR) { printf("VOL UP"); } 
+....................    	} else if(IR.address == 0 && IR.command == 17) { 
+*
+0206:  GOTO   242
+0207:  MOVF   36,F
+0208:  BTFSS  03.2
+0209:  GOTO   22C
+020A:  MOVF   37,W
+020B:  SUBLW  11
+020C:  BTFSS  03.2
+020D:  GOTO   22C
+....................       	vol_down(); 
+.................... 		//if(DEBUG_IR) { printf("VOL DOWN"); } 
+....................    	} else if(IR.address == 0 && IR.command == 13) { 
+*
+022B:  GOTO   242
+022C:  MOVF   36,F
+022D:  BTFSS  03.2
+022E:  GOTO   242
+022F:  MOVF   37,W
+0230:  SUBLW  0D
+0231:  BTFSS  03.2
+0232:  GOTO   242
+....................       	mute_toggle(); 
+.................... 		//if(DEBUG_IR) { printf("MUTE TOGGLE"); } 
+....................    	} 
+.................... 	 
+....................     
+....................    IR.state = 0; // Clear state flag 
+*
+0242:  CLRF   38
+....................    delay_ms(250); // similar to debounce.. 
+0243:  MOVLW  FA
+0244:  BSF    03.5
+0245:  MOVWF  50
+0246:  BCF    03.5
+0247:  CALL   02F
+....................    enable_interrupts(INT_EXT); // Ready to receive new command 
+0248:  BSF    0B.4
+....................    return 1; 
+0249:  MOVLW  01
+024A:  MOVWF  78
+.................... } 
+....................  
+.................... #include <RS232.c> 
+.................... int timeout_error; 
+....................  
+.................... char timed_getc() { 
+....................  
+.................... 	long timeout; 
+....................  
+.................... 	timeout_error = FALSE; 
+*
+024E:  CLRF   39
+.................... 	timeout = 0; 
+024F:  CLRF   45
+0250:  CLRF   44
+....................  
+.................... 	while(!kbhit()&&(++timeout<50000)) { // half a second 
+0251:  BTFSC  0C.5
+0252:  GOTO   266
+0253:  INCF   44,F
+0254:  BTFSC  03.2
+0255:  INCF   45,F
+0256:  MOVF   45,W
+0257:  SUBLW  C3
+0258:  BTFSS  03.0
+0259:  GOTO   266
+025A:  BTFSS  03.2
+025B:  GOTO   260
+025C:  MOVF   44,W
+025D:  SUBLW  4F
+025E:  BTFSS  03.0
+025F:  GOTO   266
+.................... 		delay_us(10); // this polls at 10x the 9600 baud rate 
+0260:  MOVLW  10
+0261:  MOVWF  77
+0262:  DECFSZ 77,F
+0263:  GOTO   262
+0264:  NOP
+.................... 	} 
+0265:  GOTO   251
+....................  
+.................... 	if(kbhit()) { 
+0266:  BTFSS  0C.5
+0267:  GOTO   276
+.................... 		timeout_error = FALSE; 
+0268:  CLRF   39
+.................... 		return(getc()); 
+*
+0273:  MOVF   78,W
+0274:  GOTO   27B
+.................... 	} else { 
+0275:  GOTO   27B
+.................... 		timeout_error = TRUE; 
+0276:  MOVLW  01
+0277:  MOVWF  39
+.................... 		return(0); 
+0278:  MOVLW  00
+0279:  MOVWF  78
+027A:  GOTO   27B
+.................... 	} 
+.................... } 
+027B:  RETURN
+....................  
+.................... int get_serial_command()  {  
+027C:  CALL   24E
+027D:  MOVF   78,W
+027E:  MOVWF  42
+.................... 	int valid_command; 
+.................... 	int is_error; 
+.................... 	char command_char; 
+.................... 	char data_char1; 
+.................... 	char end_char; 
+.................... 	 
+.................... 	char start_char = timed_getc(); 
+....................  
+.................... 	if(TIMEOUT_ERROR == true) { 
+027F:  DECFSZ 39,W
+0280:  GOTO   284
+.................... 		return 0x50; // return ERR_START_TIMEOUT; 
+0281:  MOVLW  50
+0282:  MOVWF  78
+0283:  GOTO   33E
+.................... 	} 
+....................  
+.................... 	if(start_char != COMMAND_START_BYTE) {  
+0284:  MOVF   42,W
+0285:  SUBLW  02
+0286:  BTFSC  03.2
+0287:  GOTO   28B
+.................... 		return 0; // return ERR_START_INVALID;  
+0288:  MOVLW  00
+0289:  MOVWF  78
+028A:  GOTO   33E
+.................... 	} 
+....................  
+.................... 	 
+.................... 	valid_command = 0; 
+028B:  CLRF   3D
+.................... 	is_error = 0; 
+028C:  CLRF   3E
+.................... 	 
+.................... 	command_char = timed_getc(); 
+028D:  CALL   24E
+028E:  MOVF   78,W
+028F:  MOVWF  3F
+....................  
+.................... 	if(TIMEOUT_ERROR == true) { 
+0290:  DECFSZ 39,W
+0291:  GOTO   295
+.................... 		return 0; // return ERR_COMMAND_TIMEOUT; 
+0292:  MOVLW  00
+0293:  MOVWF  78
+0294:  GOTO   33E
+.................... 	} 
+....................  
+.................... 	switch(command_char) { 
+0295:  MOVF   3F,W
+0296:  XORLW  76
+0297:  BTFSC  03.2
+0298:  GOTO   2A3
+0299:  XORLW  20
+029A:  BTFSC  03.2
+029B:  GOTO   2D5
+029C:  XORLW  3B
+029D:  BTFSC  03.2
+029E:  GOTO   2EC
+029F:  XORLW  29
+02A0:  BTFSC  03.2
+02A1:  GOTO   314
+02A2:  GOTO   327
+....................  
+.................... 		case VOL_START_BYTE : 
+....................  
+.................... 			data_char1 = timed_getc(); 
+02A3:  CALL   24E
+02A4:  MOVF   78,W
+02A5:  MOVWF  40
+....................  
+.................... 			if(TIMEOUT_ERROR == true) { 
+02A6:  DECFSZ 39,W
+02A7:  GOTO   2AB
+.................... 				return 0; // return ERR_DATA_TIMEOUT; 
+02A8:  MOVLW  00
+02A9:  MOVWF  78
+02AA:  GOTO   33E
+.................... 			} 
+.................... 	 
+.................... 			if(data_char1 == VOL_UP_BYTE) { //u 
+02AB:  MOVF   40,W
+02AC:  SUBLW  75
+02AD:  BTFSS  03.2
+02AE:  GOTO   2B2
+.................... 				valid_command = COMMAND_VOL_UP; 
+02AF:  MOVLW  01
+02B0:  MOVWF  3D
+.................... 			} else if(data_char1 == VOL_DOWN_BYTE) { //d 
+02B1:  GOTO   2D4
+02B2:  MOVF   40,W
+02B3:  SUBLW  64
+02B4:  BTFSS  03.2
+02B5:  GOTO   2B9
+.................... 				valid_command = COMMAND_VOL_DOWN; // vol_down 
+02B6:  MOVLW  02
+02B7:  MOVWF  3D
+.................... 			} else if(data_char1 == VOL_DOWN_BYTE_SMALL) { 
+02B8:  GOTO   2D4
+02B9:  MOVF   40,W
+02BA:  SUBLW  63
+02BB:  BTFSS  03.2
+02BC:  GOTO   2C2
+.................... 				is_small_step = 1; 
+02BD:  MOVLW  01
+02BE:  MOVWF  35
+.................... 				valid_command = COMMAND_VOL_DOWN; 
+02BF:  MOVLW  02
+02C0:  MOVWF  3D
+.................... 			} else if(data_char1 == VOL_UP_BYTE_SMALL) { 
+02C1:  GOTO   2D4
+02C2:  MOVF   40,W
+02C3:  SUBLW  74
+02C4:  BTFSS  03.2
+02C5:  GOTO   2CA
+.................... 				is_small_step = 1; 
+02C6:  MOVLW  01
+02C7:  MOVWF  35
+.................... 				valid_command = COMMAND_VOL_UP; 
+02C8:  MOVWF  3D
+.................... 			} else if(data_char1 == STATUS_BYTE) { //S 
+02C9:  GOTO   2D4
+02CA:  MOVF   40,W
+02CB:  SUBLW  53
+02CC:  BTFSS  03.2
+02CD:  GOTO   2D1
+.................... 				valid_command = COMMAND_VOL_STATUS; 
+02CE:  MOVLW  04
+02CF:  MOVWF  3D
+.................... 			} else { 
+02D0:  GOTO   2D4
+.................... 				return 0; // return ERR_DATA_INVALID; 
+02D1:  MOVLW  00
+02D2:  MOVWF  78
+02D3:  GOTO   33E
+.................... 			} 
+.................... 				 
+.................... 		break; 
+02D4:  GOTO   32B
+....................  
+.................... 		case VOL_DISCRETE_START : 
+.................... 	 
+.................... 			data_char1 = timed_getc(); 
+02D5:  CALL   24E
+02D6:  MOVF   78,W
+02D7:  MOVWF  40
+....................  
+.................... 			if(TIMEOUT_ERROR == true) { 
+02D8:  DECFSZ 39,W
+02D9:  GOTO   2DD
+.................... 				return 0; // return ERR_DATA_TIMEOUT; 
+02DA:  MOVLW  00
+02DB:  MOVWF  78
+02DC:  GOTO   33E
+.................... 			} 
+....................  
+.................... 			int new_volume = data_char1; 
+02DD:  MOVF   40,W
+02DE:  MOVWF  43
+.................... 			if((new_volume < 0) || (new_volume > 100)) { 
+02DF:  MOVF   43,W
+02E0:  SUBLW  64
+02E1:  BTFSC  03.0
+02E2:  GOTO   2E7
+.................... 				return 0; // return ERR_DATA_INVALID; 
+02E3:  MOVLW  00
+02E4:  MOVWF  78
+02E5:  GOTO   33E
+.................... 			} else { 
+02E6:  GOTO   2EB
+.................... 				valid_command = COMMAND_VOL_DISCRETE; 
+02E7:  MOVLW  03
+02E8:  MOVWF  3D
+.................... 				command_data = new_volume; 
+02E9:  MOVF   43,W
+02EA:  MOVWF  2F
+.................... 			} 
+....................  
+.................... 		break; 
+02EB:  GOTO   32B
+....................  
+.................... 		case MUTE_START_BYTE: 
+....................  
+.................... 			data_char1 = timed_getc(); 
+02EC:  CALL   24E
+02ED:  MOVF   78,W
+02EE:  MOVWF  40
+....................  
+.................... 			if(TIMEOUT_ERROR == true) { 
+02EF:  DECFSZ 39,W
+02F0:  GOTO   2F4
+.................... 				return 0; // return ERR_DATA_TIMEOUT; 
+02F1:  MOVLW  00
+02F2:  MOVWF  78
+02F3:  GOTO   33E
+.................... 			} 
+....................  
+.................... 			if(data_char1 == MUTE_TOGGLE_BYTE) { // M 
+02F4:  MOVF   40,W
+02F5:  SUBLW  4D
+02F6:  BTFSS  03.2
+02F7:  GOTO   2FB
+.................... 				valid_command = COMMAND_MUTE_TOGGLE; // Mute toggle 
+02F8:  MOVLW  05
+02F9:  MOVWF  3D
+.................... 			}  else if (data_char1 == MUTE_FORCEMUTE_BYTE) { 
+02FA:  GOTO   313
+02FB:  MOVF   40,W
+02FC:  SUBLW  79
+02FD:  BTFSS  03.2
+02FE:  GOTO   302
+.................... 				valid_command = COMMAND_FORCE_MUTE; 
+02FF:  MOVLW  06
+0300:  MOVWF  3D
+.................... 			} else if (data_char1 == MUTE_FORCEUNMUTE_BYTE) { 
+0301:  GOTO   313
+0302:  MOVF   40,W
+0303:  SUBLW  6E
+0304:  BTFSS  03.2
+0305:  GOTO   309
+.................... 				valid_command = COMMAND_FORCE_UNMUTE; 
+0306:  MOVLW  07
+0307:  MOVWF  3D
+.................... 			} else if(data_char1 == STATUS_BYTE) { //S 
+0308:  GOTO   313
+0309:  MOVF   40,W
+030A:  SUBLW  53
+030B:  BTFSS  03.2
+030C:  GOTO   310
+.................... 				valid_command = COMMAND_MUTE_STATUS; // mute status 
+030D:  MOVLW  08
+030E:  MOVWF  3D
+.................... 			} else { 
+030F:  GOTO   313
+.................... 				return 0; // return ERR_DATA_INVALID; 
+0310:  MOVLW  00
+0311:  MOVWF  78
+0312:  GOTO   33E
+.................... 			} 
+....................  
+.................... 		break; 
+0313:  GOTO   32B
+....................  
+.................... 		case DEBUG_START_BYTE : 
+....................  
+.................... 			data_char1 = timed_getc(); 
+0314:  CALL   24E
+0315:  MOVF   78,W
+0316:  MOVWF  40
+....................  
+.................... 			if(TIMEOUT_ERROR == true) { 
+0317:  DECFSZ 39,W
+0318:  GOTO   31C
+.................... 				return 0; // return ERR_DATA_TIMEOUT; 
+0319:  MOVLW  00
+031A:  MOVWF  78
+031B:  GOTO   33E
+.................... 			} 
+....................  
+.................... 			if(data_char1 == DEBUG_GET_VERSION)	{ 
+031C:  MOVF   40,W
+031D:  SUBLW  56
+031E:  BTFSS  03.2
+031F:  GOTO   323
+.................... 				valid_command = COMMAND_GET_VERSION; 
+0320:  MOVLW  09
+0321:  MOVWF  3D
+.................... 			} else { 
+0322:  GOTO   326
+.................... 				return 0; // return ERR_DATA_INVALID; 
+0323:  MOVLW  00
+0324:  MOVWF  78
+0325:  GOTO   33E
+.................... 			} 
+....................  
+.................... 		break; 
+0326:  GOTO   32B
+....................  
+.................... 		default: 
+.................... 			return 0; // return ERR_COMMAND_INVALID; 
+0327:  MOVLW  00
+0328:  MOVWF  78
+0329:  GOTO   33E
+.................... 		break; 
+032A:  GOTO   32B
+.................... 	} 
+....................  
+....................  
+.................... 	end_char = timed_getc(); 
+032B:  CALL   24E
+032C:  MOVF   78,W
+032D:  MOVWF  41
+....................  
+.................... 	if(TIMEOUT_ERROR == true) { 
+032E:  DECFSZ 39,W
+032F:  GOTO   333
+.................... 		return 0; // return ERR_END_TIMEOUT; 
+0330:  MOVLW  00
+0331:  MOVWF  78
+0332:  GOTO   33E
+.................... 	} 
+....................  
+.................... 	if(end_char == COMMAND_END_BYTE) { 
+0333:  MOVF   41,W
+0334:  SUBLW  03
+0335:  BTFSS  03.2
+0336:  GOTO   33B
+.................... 		return valid_command; 
+0337:  MOVF   3D,W
+0338:  MOVWF  78
+0339:  GOTO   33E
+.................... 	} else { 
+033A:  GOTO   33E
+.................... 		return 0; // return ERR_END_INVALID; 
+033B:  MOVLW  00
+033C:  MOVWF  78
+033D:  GOTO   33E
+.................... 	} 
+.................... } 
+033E:  GOTO   3BE (RETURN)
+....................  
+....................  
+.................... // Interrupt triggers when IR_INPUT goes from HIGH to LOW 
+.................... #int_EXT 
+.................... void EXT_isr() { 
+....................     get_RC5_command(); 
+.................... } 
+....................  
+....................  
+....................  
+*
+024B:  BCF    0B.1
+024C:  BCF    0A.3
+024D:  GOTO   01E
+.................... void main()  
+.................... { 
+*
+033F:  CLRF   04
+0340:  BCF    03.7
+0341:  MOVLW  1F
+0342:  ANDWF  03,F
+0343:  CLRF   29
+0344:  MOVLW  81
+0345:  BSF    03.5
+0346:  MOVWF  19
+0347:  MOVLW  A6
+0348:  MOVWF  18
+0349:  MOVLW  90
+034A:  BCF    03.5
+034B:  MOVWF  18
+034C:  CLRF   2A
+034D:  CLRF   2B
+034E:  MOVLW  64
+034F:  MOVWF  2C
+0350:  MOVLW  0A
+0351:  MOVWF  2D
+0352:  MOVLW  05
+0353:  MOVWF  2E
+0354:  CLRF   2F
+0355:  CLRF   30
+0356:  CLRF   31
+0357:  CLRF   32
+0358:  CLRF   33
+0359:  MOVLW  01
+035A:  MOVWF  34
+035B:  CLRF   35
+035C:  MOVLW  07
+035D:  MOVWF  1F
+035E:  CLRF   3A
+035F:  CLRF   3B
+0360:  CLRF   3C
+.................... 	int rs232_command = 0, eeprom_volume = 0, eeprom_mute = 0; 
+....................    	 
+.................... 	setup_timer_0(RTCC_INTERNAL|RTCC_DIV_1); 
+0361:  BSF    03.5
+0362:  MOVF   01,W
+0363:  ANDLW  C7
+0364:  IORLW  08
+0365:  MOVWF  01
+....................    	setup_timer_1(T1_INTERNAL|T1_DIV_BY_8); 
+0366:  MOVLW  B5
+0367:  BCF    03.5
+0368:  MOVWF  10
+....................     
+....................    	setup_timer_2(T2_DISABLED,0,1); 
+0369:  MOVLW  00
+036A:  MOVWF  78
+036B:  MOVWF  12
+036C:  MOVLW  00
+036D:  BSF    03.5
+036E:  MOVWF  12
+....................    	setup_comparator(NC_NC_NC_NC); 
+036F:  MOVLW  07
+0370:  BCF    03.5
+0371:  MOVWF  1F
+0372:  BSF    03.5
+0373:  MOVF   05,W
+0374:  MOVWF  05
+0375:  MOVLW  10
+0376:  MOVWF  77
+0377:  DECFSZ 77,F
+0378:  GOTO   377
+0379:  NOP
+037A:  BCF    03.5
+037B:  MOVF   1F,W
+037C:  BCF    0C.6
+....................    	setup_vref(FALSE); 
+037D:  BSF    03.5
+037E:  CLRF   1F
+....................  
+....................    	enable_interrupts(INT_EXT); 
+037F:  BCF    03.5
+0380:  BSF    0B.4
+....................    	ext_int_edge(H_TO_L); 
+0381:  BSF    03.5
+0382:  BCF    01.6
+....................    	enable_interrupts(GLOBAL); 
+0383:  MOVLW  C0
+0384:  BCF    03.5
+0385:  IORWF  0B,F
+....................  
+....................    	IR.state = 0; 
+0386:  CLRF   38
+....................  
+....................    	/** READ CONFIGURATION VALUES FROM EEPROM, RESET IF EEPROM EMPTY **/ 
+....................    	eeprom_volume = read_eeprom(10); 
+0387:  MOVLW  0A
+0388:  BSF    03.5
+0389:  MOVWF  1B
+038A:  BCF    1C.7
+038B:  BSF    1C.0
+038C:  MOVF   1A,W
+038D:  BCF    03.5
+038E:  MOVWF  3B
+....................    	eeprom_mute = read_eeprom(12); 
+038F:  MOVLW  0C
+0390:  BSF    03.5
+0391:  MOVWF  1B
+0392:  BCF    1C.7
+0393:  BSF    1C.0
+0394:  MOVF   1A,W
+0395:  BCF    03.5
+0396:  MOVWF  3C
+....................  
+....................    	if(eeprom_volume == 0xFF) { // EEPROM empty 
+0397:  INCFSZ 3B,W
+0398:  GOTO   39D
+....................     	//CHANGEME 
+.................... 		current_volume = 50; 
+0399:  MOVLW  32
+039A:  MOVWF  30
+.................... 		is_muted = 0; 
+039B:  CLRF   33
+....................    	} else { 
+039C:  GOTO   3A3
+.................... 		current_volume = eeprom_volume; 
+039D:  MOVF   3B,W
+039E:  MOVWF  30
+.................... 		muted_volume = eeprom_volume; 
+039F:  MOVF   3B,W
+03A0:  MOVWF  32
+.................... 		is_muted = eeprom_mute; 
+03A1:  MOVF   3C,W
+03A2:  MOVWF  33
+.................... 	} 
+.................... 	 
+....................     if(is_muted == 0) { 
+03A3:  MOVF   33,F
+03A4:  BTFSS  03.2
+03A5:  GOTO   3AD
+03A6:  CLRF   28
+03A7:  BTFSC  0B.7
+03A8:  BSF    28.7
+03A9:  BCF    0B.7
+....................    		saveAndSetVol(); 
+03AA:  CALL   08B
+03AB:  BTFSC  28.7
+03AC:  BSF    0B.7
+.................... 	} 
+....................  
+.................... 	if(DEBUG) { printf("EEPROM VOL: %d MUTE: %d\n\r",current_volume,is_muted); } 
+....................  
+....................    /** END EEPROM INIT **/ 
+....................     
+.................... 	putc(COMMAND_START_BYTE); 
+03AD:  MOVLW  02
+03AE:  BTFSS  0C.4
+03AF:  GOTO   3AE
+03B0:  MOVWF  19
+.................... 	putc('O'); 
+03B1:  MOVLW  4F
+03B2:  BTFSS  0C.4
+03B3:  GOTO   3B2
+03B4:  MOVWF  19
+.................... 	putc('K'); 
+03B5:  MOVLW  4B
+03B6:  BTFSS  0C.4
+03B7:  GOTO   3B6
+03B8:  MOVWF  19
+.................... 	putc(COMMAND_END_BYTE); 
+03B9:  MOVLW  03
+03BA:  BTFSS  0C.4
+03BB:  GOTO   3BA
+03BC:  MOVWF  19
+....................  
+....................    while (true) // Infinite loop 
+....................    { 
+.................... 		rs232_command = get_serial_command(); 
+03BD:  GOTO   27C
+03BE:  MOVF   78,W
+03BF:  MOVWF  3A
+....................  
+.................... 		if(rs232_command == 0x50) { 
+03C0:  MOVF   3A,W
+03C1:  SUBLW  50
+03C2:  BTFSS  03.2
+03C3:  GOTO   3D0
+03C4:  CLRF   28
+03C5:  BTFSC  0B.7
+03C6:  BSF    28.7
+03C7:  BCF    0B.7
+.................... 			delay_ms(10); 
+03C8:  MOVLW  0A
+03C9:  BSF    03.5
+03CA:  MOVWF  50
+03CB:  BCF    03.5
+03CC:  CALL   02F
+03CD:  BTFSC  28.7
+03CE:  BSF    0B.7
+.................... 			continue; 
+03CF:  GOTO   3BD
+.................... 		} 
+....................  
+....................       	switch(rs232_command) { 
+03D0:  MOVF   3A,W
+03D1:  BTFSC  03.2
+03D2:  GOTO   3EF
+03D3:  XORLW  01
+03D4:  BTFSC  03.2
+03D5:  GOTO   400
+03D6:  XORLW  03
+03D7:  BTFSC  03.2
+03D8:  GOTO   424
+03D9:  XORLW  07
+03DA:  BTFSC  03.2
+03DB:  GOTO   442
+03DC:  XORLW  03
+03DD:  BTFSC  03.2
+03DE:  GOTO   452
+03DF:  XORLW  01
+03E0:  BTFSC  03.2
+03E1:  GOTO   465
+03E2:  XORLW  04
+03E3:  BTFSC  03.2
+03E4:  GOTO   475
+03E5:  XORLW  0B
+03E6:  BTFSC  03.2
+03E7:  GOTO   586
+03E8:  XORLW  0C
+03E9:  BTFSC  03.2
+03EA:  GOTO   59E
+03EB:  XORLW  0D
+03EC:  BTFSC  03.2
+03ED:  GOTO   5AF
+03EE:  GOTO   5C0
+.................... 			case 0 : 
+.................... 				// error; 
+....................  
+.................... 				putc(COMMAND_START_BYTE); 
+03EF:  MOVLW  02
+03F0:  BTFSS  0C.4
+03F1:  GOTO   3F0
+03F2:  MOVWF  19
+.................... 				putc('E'); 
+03F3:  MOVLW  45
+03F4:  BTFSS  0C.4
+03F5:  GOTO   3F4
+03F6:  MOVWF  19
+.................... 				putc('R'); 
+03F7:  MOVLW  52
+03F8:  BTFSS  0C.4
+03F9:  GOTO   3F8
+03FA:  MOVWF  19
+.................... 				putc(COMMAND_END_BYTE); 
+03FB:  MOVLW  03
+03FC:  BTFSS  0C.4
+03FD:  GOTO   3FC
+03FE:  MOVWF  19
+.................... 			break; 
+03FF:  GOTO   5D1
+....................  
+.................... 			case COMMAND_VOL_UP : 
+.................... 				vol_up(); 
+.................... 			break; 
+*
+0423:  GOTO   5D1
+....................  
+.................... 			case COMMAND_VOL_DOWN : 
+.................... 				vol_down(); 
+.................... 			break; 
+*
+0441:  GOTO   5D1
+....................  
+.................... 			case COMMAND_MUTE_TOGGLE : 
+.................... 				mute_toggle(); 
+.................... 			break; 
+*
+0451:  GOTO   5D1
+....................  
+.................... 			case COMMAND_FORCE_MUTE : 
+.................... 				mute_forcemute(); 
+.................... 			break; 
+*
+0464:  GOTO   5D1
+....................  
+.................... 			case COMMAND_FORCE_UNMUTE : 
+.................... 				mute_forceunmute(); 
+.................... 			break; 
+*
+0474:  GOTO   5D1
+....................  
+.................... 			case COMMAND_VOL_DISCRETE : 
+.................... 				vol_discrete(); 
+.................... 			break; 
+*
+0585:  GOTO   5D1
+....................  
+.................... 			case COMMAND_MUTE_STATUS : 
+.................... 				// Mute status 
+.................... 				putc(COMMAND_START_BYTE); 
+0586:  MOVLW  02
+0587:  BTFSS  0C.4
+0588:  GOTO   587
+0589:  MOVWF  19
+.................... 				putc(MUTE_START_BYTE); 
+058A:  MOVLW  6D
+058B:  BTFSS  0C.4
+058C:  GOTO   58B
+058D:  MOVWF  19
+.................... 				if(is_muted == 1) { 
+058E:  DECFSZ 33,W
+058F:  GOTO   595
+.................... 					putc(0x01); 
+0590:  MOVLW  01
+0591:  BTFSS  0C.4
+0592:  GOTO   591
+0593:  MOVWF  19
+.................... 				} else { 
+0594:  GOTO   599
+.................... 					putc(0x00); 
+0595:  MOVLW  00
+0596:  BTFSS  0C.4
+0597:  GOTO   596
+0598:  MOVWF  19
+.................... 				} 
+.................... 				putc(COMMAND_END_BYTE); 
+0599:  MOVLW  03
+059A:  BTFSS  0C.4
+059B:  GOTO   59A
+059C:  MOVWF  19
+.................... 			break; 
+059D:  GOTO   5D1
+....................  
+.................... 			case COMMAND_VOL_STATUS : 
+.................... 					putc(COMMAND_START_BYTE); 
+059E:  MOVLW  02
+059F:  BTFSS  0C.4
+05A0:  GOTO   59F
+05A1:  MOVWF  19
+.................... 					putc(VOL_START_BYTE); 
+05A2:  MOVLW  76
+05A3:  BTFSS  0C.4
+05A4:  GOTO   5A3
+05A5:  MOVWF  19
+.................... 					putc(current_volume); 
+05A6:  MOVF   30,W
+05A7:  BTFSS  0C.4
+05A8:  GOTO   5A7
+05A9:  MOVWF  19
+.................... 					putc(COMMAND_END_BYTE); 
+05AA:  MOVLW  03
+05AB:  BTFSS  0C.4
+05AC:  GOTO   5AB
+05AD:  MOVWF  19
+.................... 			break; 
+05AE:  GOTO   5D1
+....................  
+.................... 			case COMMAND_GET_VERSION	: 
+.................... 				putc(COMMAND_START_BYTE); 
+05AF:  MOVLW  02
+05B0:  BTFSS  0C.4
+05B1:  GOTO   5B0
+05B2:  MOVWF  19
+.................... 				putc(VERSION_MAJOR); 
+05B3:  MOVLW  02
+05B4:  BTFSS  0C.4
+05B5:  GOTO   5B4
+05B6:  MOVWF  19
+.................... 				putc(VERSION_MINOR); 
+05B7:  MOVLW  00
+05B8:  BTFSS  0C.4
+05B9:  GOTO   5B8
+05BA:  MOVWF  19
+.................... 				putc(COMMAND_END_BYTE); 
+05BB:  MOVLW  03
+05BC:  BTFSS  0C.4
+05BD:  GOTO   5BC
+05BE:  MOVWF  19
+.................... 			break; 
+05BF:  GOTO   5D1
+.................... 	 
+.................... 			default : 
+.................... 				// error 
+....................  
+.................... 				putc(COMMAND_START_BYTE); 
+05C0:  MOVLW  02
+05C1:  BTFSS  0C.4
+05C2:  GOTO   5C1
+05C3:  MOVWF  19
+.................... 				putc('E'); 
+05C4:  MOVLW  45
+05C5:  BTFSS  0C.4
+05C6:  GOTO   5C5
+05C7:  MOVWF  19
+.................... 				putc('R'); 
+05C8:  MOVLW  52
+05C9:  BTFSS  0C.4
+05CA:  GOTO   5C9
+05CB:  MOVWF  19
+.................... 				putc(COMMAND_END_BYTE); 
+05CC:  MOVLW  03
+05CD:  BTFSS  0C.4
+05CE:  GOTO   5CD
+05CF:  MOVWF  19
+....................  
+.................... 			break; 
+05D0:  GOTO   5D1
+.................... 		}       
+....................    }  
+05D1:  GOTO   3BD
+.................... } 
+05D2:  GOTO   5D2
+
+Configuration Fuses:
+   Word  1: 3F0A   NOWDT NOPUT HS NOMCLR NOBROWNOUT NOLVP NOCPD NOPROTECT
+
+   Some fuses have been forced to be compatible with the ICD debugger.

@@ -1,0 +1,31 @@
+>>> Warning 204 "C:\SOURCE\PIC\DSP 4x4 - PIC\w25q80bv.c" Line 102(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP 4x4 - PIC\w25q80bv.c" Line 124(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP 4x4 - PIC\device_boot.c" Line 64(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP 4x4 - PIC\device_boot.c" Line 70(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP 4x4 - PIC\device_boot.c" Line 74(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP 4x4 - PIC\device_boot.c" Line 82(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP 4x4 - PIC\device_boot.c" Line 89(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP 4x4 - PIC\device_boot.c" Line 103(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP 4x4 - PIC\device_boot.c" Line 107(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP 4x4 - PIC\device_boot.c" Line 111(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP 4x4 - PIC\device_boot.c" Line 116(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP 4x4 - PIC\device_boot.c" Line 121(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP 4x4 - PIC\device_boot.c" Line 161(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP 4x4 - PIC\device_boot.c" Line 169(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP 4x4 - PIC\device_boot.c" Line 179(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP 4x4 - PIC\device_boot.c" Line 193(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP 4x4 - PIC\device_boot.c" Line 216(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP 4x4 - PIC\device_boot.c" Line 222(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP 4x4 - PIC\remote_volume.c" Line 46(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP 4x4 - PIC\remote_volume.c" Line 79(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP 4x4 - PIC\remote_volume.c" Line 143(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP 4x4 - PIC\streaming.c" Line 168(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP 4x4 - PIC\interrupts.c" Line 12(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP 4x4 - PIC\interrupts.c" Line 19(1,1): Condition always FALSE
+>>> Warning 204 "main.c" Line 62(1,1): Condition always FALSE
+>>> Warning 204 "main.c" Line 70(1,1): Condition always FALSE
+>>> Warning 204 "main.c" Line 74(1,1): Condition always FALSE
+>>> Warning 204 "main.c" Line 80(1,1): Condition always FALSE
+      Memory usage:   ROM=52%      RAM=46% - 49%
+      0 Errors,  28 Warnings.
+Build Successful.

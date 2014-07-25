@@ -1,0 +1,5 @@
+>>> Warning 203 "main.c" Line 47(1,1): Condition always TRUE
+>>> Warning 202 "main.c" Line 42(7,15): Variable never used:   pot_math
+      Memory usage:   ROM=42%      RAM=3% - 23%
+      0 Errors,  2 Warnings.
+Build Successful.

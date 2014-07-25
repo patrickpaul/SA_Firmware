@@ -1,0 +1,88 @@
+004-005 @READ_PROGRAM_MEMORY8.P1
+013     CCP_1_LOW
+013     CCP_1
+014     CCP_1_HIGH
+019.6   C1OUT
+020     @SCRATCH
+021     @SCRATCH
+021     _RETURN_
+022     @SCRATCH
+023     @SCRATCH
+025-026 MAIN.rvc_value
+027     MAIN.pot_value
+028-02B MAIN.pot_math
+02C     @delay_ms1.P1
+02C     set_digital_pot.data
+02C-02D @ITOF.P1
+02C-02F @ADDFF.P2
+02C-02F @MULFF.P3
+02C-02F @SFTOI.P4
+02D     @I2C_WRITE_1.P1
+030-033 @MULFF.P1
+030-033 @ADDFF.P2
+034     @MULFF.@SCRATCH1
+034     @ADDFF.@SCRATCH1
+035     @MULFF.@SCRATCH2
+035     @ADDFF.@SCRATCH2
+036     @MULFF.@SCRATCH3
+036     @ADDFF.@SCRATCH3
+037     @MULFF.@SCRATCH4
+037     @ADDFF.@SCRATCH4
+038     @MULFF.@SCRATCH5
+038     @ADDFF.@SCRATCH5
+039     @ADDFF.@SCRATCH6
+03A     @ADDFF.@SCRATCH7
+03B     @ADDFF.@SCRATCH8
+09B-09C @READ_PROGRAM_MEMORY8.P1
+
+ROM Allocation:
+024E  @delay_ms1
+01F3  @I2C_WRITE_1
+0227  set_digital_pot
+0261  MAIN
+0004  @ITOF
+0021  @MULFF
+0096  @ADDFF
+01D4  @SFTOI
+0261  @cinit1
+0272  @cinit2
+
+
+User Memory space: 
+
+User Memory space: 
+
+Project Directory:
+    C:\SOURCE\PIC\NET AMPS RVC\
+
+Project Files:
+    main.c                                                  [16-Nov-12 12:13  CRC=88BEBA0A]
+    12F683.h                                                [28-Feb-12 13:43  CRC=647CEA16]
+
+Source signature=51B88E36
+
+Units:
+    main (main)
+
+Compiler Settings:
+    Processor:      PIC12F683
+    Pointer Size:   8
+    ADC Range:      0-255
+    Opt Level:      9
+    Short,Int,Long: UNSIGNED: 1,8,16
+    Float,Double:   32,32
+    ICD Provisions: Yes
+    Predefined symbols:
+       #define __DEBUG 1
+       #define __12F683 TRUE
+
+Output Files:
+    Errors:      main.err
+    Ext Symbols: main.esym
+    INHX8:       main.hex
+    Symbols:     main.sym
+    List:        main.lst
+    Debug/COFF:  main.cof
+    Project:     main.PJT
+    Call Tree:   main.tre
+    Statistics:  main.STA

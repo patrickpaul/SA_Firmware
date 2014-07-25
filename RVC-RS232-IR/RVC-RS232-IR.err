@@ -1,0 +1,9 @@
+>>> Warning 204 "C:\SOURCE\PIC\RVC-RS232-IR\DPOT.c" Line 104(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\RVC-RS232-IR\IR.c" Line 58(1,1): Condition always FALSE
+>>> Warning 205 "C:\SOURCE\PIC\RVC-RS232-IR\RS232.c" Line 87(1,1): Unsigned variable is never less than zero
+>>> Warning 204 "RVC-RS232-IR.c" Line 50(1,1): Condition always FALSE
+>>> Warning 216 "RVC-RS232-IR.c" Line 141(1,2): Interrupts disabled during call to prevent re-entrancy:  (saveAndSetVol)
+>>> Warning 216 "RVC-RS232-IR.c" Line 141(1,2): Interrupts disabled during call to prevent re-entrancy:  (@delay_ms1)
+      Memory usage:   ROM=73%      RAM=15% - 65%
+      0 Errors,  6 Warnings.
+Build Successful.

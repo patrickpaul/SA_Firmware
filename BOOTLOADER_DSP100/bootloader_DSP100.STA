@@ -1,0 +1,61 @@
+
+ROM used: 912 (1%)
+          2052 (3%) including unused fragments
+
+          1 Average locations per line
+          12 Average locations per statement
+
+RAM used: 5 (0%) at main() level
+          81 (2%) worst case
+
+Stack used: 4 worst case (out of 30 total available)
+
+Lines Stmts  %   Files
+----- ----- ---  -----
+  334    75 100  bootloader_DSP100.c
+  604     0   0  18LF46K22.h
+   59     0   0  types.h
+----- -----
+  997    75 Total
+
+Page ROM  %  RAM   Vol Diff  Functions:
+---- --- --- ---   --- ----  ----------
+0     64   4   1             @@PUTCHAR_1_
+0     68   4   1             @@GETCH_1_
+0     72   4   6   408  7.1  get_hexbyte
+0     46   3   5   236  5.5  check_checksum
+0    300  16  68  1684 10.2  bootloader
+0     32   2   0             @@FLASHWR
+0     66   4   7             @@WRITE_PROGRAM_MEMORY
+0      4   0   0    20  1.3  application
+0     94   5   4   287  5.5  timed_getc
+0    106   6   0   292  3.6  MAIN
+0     12   1   0             @const119
+0     32   2   2             @@PSTRINGC_82
+0      6   0   0    17  1.1  isr_high
+0      6   0   0    17  1.1  isr_low
+ Inline        0             @cinit1
+
+Program metrics:
+    Functions               8
+    Statements              75
+    Comments                225
+    Volume (V)              4057
+    Difficulty (D)          35.5
+    Effort to implement (E) 144148
+    Time to implement (T)   2 hours, 13 minutes
+    Est Delivered Bugs (B)  1
+    Cyclomatic Complexity   12
+    Maintainability (MI)    149
+
+ Segment     Used  Free
+-----------  ----  ----
+00000-00006     4  4  
+00008-00016     6  10  
+00018-00028     6  12  
+0002A-007FE   892  1114  
+00800-00802     4  0  
+00804-0FFFE     0  63484  
+
+
+

@@ -1,0 +1,64 @@
+
+ROM used: 1466 (72%)
+          1466 (72%) including unused fragments
+
+          2 Average locations per line
+          4 Average locations per statement
+
+RAM used: 33 (15%) at main() level
+          145 (65%) worst case
+
+Stack used: 7 worst case (out of 7 total available)
+
+Lines Stmts  %   Files
+----- ----- ---  -----
+  135    75  19  RVC-RS232-IR.c
+  223     0   0  16F628A.h
+  110     0   0  RVC-RS232-IR.h
+  253   189  48  DPOT.c
+   79    54  14  IR.c
+   82    77  19  RS232.c
+----- -----
+  882   395 Total
+
+Page ROM  %  RAM   Vol Diff  Functions:
+---- --- --- ---   --- ----  ----------
+0     20   1   1             @delay_ms1
+ Inline        1             @delay_us1
+ Inline        0             @GETCH_BIU_1
+0     72   5   4   538  4.5  set_digital_pot
+ Inline        2  2380  5.9  volume_to_nearest_five
+ Inline        3             @DIV88
+0    190  13   3  1258  7.2  saveAndSetVol
+ Inline        0    47  1.7  vol_discrete
+ Inline        1   359  4.6  vol_up
+ Inline        0   321  4.1  vol_down
+ Inline        0   134  2.4  mute_forcemute
+ Inline        0   119  2.6  mute_forceunmute
+ Inline        0   223  2.6  mute_toggle
+ Inline        7  1890 10.3  get_RC5_command
+0    230  16   5  2083  7.5  get_serial_command
+0    263  18   0    12  0.8  EXT_isr
+0    644  44   3  2268  7.8  MAIN
+ Inline        0             @cinit1
+
+Program metrics:
+    Functions               13
+    Statements              395
+    Comments                137
+    Volume (V)              17083
+    Difficulty (D)          63.8
+    Effort to implement (E) 1090694
+    Time to implement (T)   16 hours, 50 minutes
+    Est Delivered Bugs (B)  4
+    Cyclomatic Complexity   85
+    Maintainability (MI)    29
+
+ Segment     Used  Free
+-----------  ----  ----
+00000-00003     4  0  
+00004-0002E    43  0  
+0002F-007FF  1419  582  
+
+
+

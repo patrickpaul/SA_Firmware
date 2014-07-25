@@ -1,0 +1,133 @@
+004-005 @READ_PROGRAM_MEMORY8.P1
+015     CCP_1
+015     CCP_1_LOW
+016     CCP_1_HIGH
+01F.6   C1OUT
+01F.7   C2OUT
+020     @INTERRUPT_AREA
+021     @INTERRUPT_AREA
+022     @INTERRUPT_AREA
+023     @INTERRUPT_AREA
+024     @INTERRUPT_AREA
+025     @INTERRUPT_AREA
+026     @INTERRUPT_AREA
+027     @INTERRUPT_AREA
+028     @INTERRUPT_AREA
+029     rs232_errors
+02A     VOL_MUTE
+02B     VOL_MIN
+02C     VOL_MAX
+02D     VOL_BIG_STEP
+02E     VOL_SMALL_STEP
+02F     command_data
+030     current_volume
+031     current_pot_setting
+032     muted_volume
+033     is_muted
+034     startup_flag
+035     is_small_step
+036-038 IR
+039     timeout_error
+03A     MAIN.rs232_command
+03B     MAIN.eeprom_volume
+03C     MAIN.eeprom_mute
+03D     volume_to_nearest_five.return_int
+03D     get_serial_command.valid_command
+03E     get_serial_command.is_error
+03E     volume_to_nearest_five.@SCRATCH1
+03F     get_serial_command.command_char
+040     get_serial_command.data_char1
+041     get_serial_command.end_char
+042     get_serial_command.start_char
+043     get_serial_command.new_volume
+044-045 timed_getc.timeout
+05B-05C get_RC5_command.tmp
+05D-05E get_RC5_command.t
+05F     get_RC5_command.i
+060     get_RC5_command.inp
+061     saveAndSetVol.log_index
+061     get_RC5_command.@SCRATCH1
+062     saveAndSetVol.eeprom_volume
+063     saveAndSetVol.eeprom_mute
+064     x
+077     @SCRATCH
+078     @SCRATCH
+078     _RETURN_
+079     @SCRATCH
+07A     @SCRATCH
+07C     vol_up.@SCRATCH1
+07D     @delay_us1.P1
+09B-09C @READ_PROGRAM_MEMORY8.P1
+0A0-0B4 saveAndSetVol.shaped_pot_values
+0CC     @DIV88.P1
+0CC     set_digital_pot.data
+0CD     @DIV88.P1
+0CD     set_digital_pot.i
+0CE-0CF set_digital_pot.cmd
+0CE     @DIV88.@SCRATCH1
+0D0     @delay_ms1.P1
+
+ROM Allocation:
+002F  @delay_ms1
+01B3  @delay_us1
+0269  @GETCH_BIU_1
+0043  set_digital_pot
+0477  volume_to_nearest_five
+047D  @DIV88
+008B  saveAndSetVol
+0475  vol_discrete
+0400  vol_up
+0424  vol_down
+0452  mute_forcemute
+0465  mute_forceunmute
+0442  mute_toggle
+0147  get_RC5_command
+024E  timed_getc
+027C  get_serial_command
+0147  EXT_isr
+033F  MAIN
+033F  @cinit1
+035E  @cinit2
+
+
+User Memory space: 
+
+User Memory space: 
+
+Project Directory:
+    C:\SOURCE\PIC\RVC-RS232-IR\
+
+Project Files:
+    RVC-RS232-IR.c                                          [10-Sep-13 12:26  CRC=A34D969F]
+    16F628A.h                                               [28-Feb-12 13:43  CRC=0C2CE1D5]
+    RVC-RS232-IR.h                                          [14-Oct-13 12:46  CRC=89454D9A]
+    DPOT.c                                                  [14-Oct-13 11:43  CRC=532EB24C]
+    IR.c                                                    [30-Jul-13 11:39  CRC=BC53C47C]
+    RS232.c                                                 [10-Sep-13 12:27  CRC=9592892F]
+
+Source signature=73674F34
+
+Units:
+    RVC-RS232-IR (main)
+
+Compiler Settings:
+    Processor:      PIC16F628A
+    Pointer Size:   16
+    Opt Level:      9
+    Short,Int,Long: UNSIGNED: 1,8,16
+    Float,Double:   32,32
+    ICD Provisions: Yes
+    Predefined symbols:
+       #define __DEBUG 1
+       #define __16F628A TRUE
+
+Output Files:
+    Errors:      RVC-RS232-IR.err
+    Ext Symbols: RVC-RS232-IR.esym
+    INHX8:       RVC-RS232-IR.hex
+    Symbols:     RVC-RS232-IR.sym
+    List:        RVC-RS232-IR.lst
+    Debug/COFF:  RVC-RS232-IR.cof
+    Project:     RVC-RS232-IR.PJT
+    Call Tree:   RVC-RS232-IR.tre
+    Statistics:  RVC-RS232-IR.STA

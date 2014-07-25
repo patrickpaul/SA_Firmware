@@ -1,0 +1,122 @@
+000     @SCRATCH
+001     @SCRATCH
+001     _RETURN_
+002     @SCRATCH
+003     @SCRATCH
+004     rs232_errors
+005     timeout_error
+006     MAIN.receive_char
+007-00A timed_getc.timeout
+007-00A bootloader.addr
+007     @@PSTRINGC_9600_31774_31775.@SCRATCH1
+008     @@PSTRINGC_9600_31774_31775.@SCRATCH2
+00B-00C bootloader.addr_low
+00D     bootloader.addr_high
+00E     bootloader.reclen
+00F     bootloader.rectype
+010     bootloader.idx
+011-042 bootloader.buffer
+043     bootloader.ch
+044.0   bootloader.hexend
+045-046 bootloader.next_addr
+047     @@WRITE_PROGRAM_MEMORY.P1
+047     @@PUTCHAR_1_.P2
+047-048 check_checksum.hex
+047     @@GETCH_1_.@SCRATCH1
+047     bootloader.@SCRATCH1
+048     bootloader.@SCRATCH2
+049     check_checksum.reclen
+049     bootloader.@SCRATCH3
+04A     check_checksum.checksum
+04A     bootloader.@SCRATCH4
+04B     check_checksum.i
+04C-04D get_hexbyte.hex
+04E     get_hexbyte.i
+04F     get_hexbyte.ret
+050     get_hexbyte.ch
+051     get_hexbyte.@SCRATCH1
+F55     CCP_5_LOW
+F55     CCP_5
+F56     CCP_5_HIGH
+F58     CCP_4_LOW
+F58     CCP_4
+F59     CCP_4_HIGH
+F5E     CCP_3_LOW
+F5E     CCP_3
+F5F     CCP_3_HIGH
+F67     CCP_2_LOW
+F67     CCP_2
+F68     CCP_2_HIGH
+F78.6   C2OUT
+F79.6   C1OUT
+FBE     CCP_1
+FBE     CCP_1_LOW
+FBF     CCP_1_HIGH
+FE1-FE2 @READ_PACKED_MEMORY.P1
+FE1-FE2 @WRITE_PACKED_MEMORY.P2
+FE9-FEA @READ_PROGRAM_MEMORY.P1
+FE9-FEA @WRITE_PACKED_MEMORY.P2
+FE9-FEA @READ_PACKED_MEMORY.P3
+FE9-FEA @WRITE_PROGRAM_MEMORY.P4
+FE9-FEA @@WRITE_PROGRAM_MEMORY.P5
+FF6-FF8 @@WRITE_PROGRAM_MEMORY.P1
+FF6-FF8 @READ_PROGRAM_MEMORY.P2
+FF6-FF8 @WRITE_PROGRAM_MEMORY.P3
+
+ROM Allocation:
+012E  @@PUTCHAR_1_
+0042  @@GETCH_1_
+0086  @@GETCH_BIU_2
+016E  get_hexbyte
+01B6  check_checksum
+0246  bootloader
+01E4  @@FLASHWR
+0204  @@WRITE_PROGRAM_MEMORY
+0800  application
+009C  timed_getc
+0372  MAIN
+002A  @const124
+010C  @@PSTRINGC_9600_31774_31775
+0008  isr_high
+0018  isr_low
+0372  @cinit1
+03AC  @cinit2
+
+
+User Memory space: 
+
+User Memory space: 
+
+Project Directory:
+    C:\SOURCE\PIC\BOOTLOADER\
+
+Project Files:
+    bootloader.c                                            [25-Jun-14 15:57  CRC=03069FB0]
+    18LF46K22.h                                             [29-Nov-12 10:13  CRC=77F69F4C]
+    types.h                                                 [01-Nov-10 12:41  CRC=B50767DC]
+
+Source signature=E50C0EB4
+
+Units:
+    bootloader (main)
+
+Compiler Settings:
+    Processor:      PIC18LF46K22
+    Pointer Size:   16
+    ADC Range:      0-255
+    Opt Level:      9
+    Short,Int,Long: UNSIGNED: 1,8,16
+    Float,Double:   32,32
+    Predefined symbols:
+       #define __18LF46K22 TRUE
+
+Output Files:
+    Errors:      bootloader.err
+    Ext Symbols: bootloader.esym
+    INHX32:      bootloader.hex
+    Symbols:     bootloader.sym
+    List:        bootloader.lst
+    Debug/COFF:  bootloader.cof
+    Project:     bootloader.PJT
+    Call Tree:   bootloader.tre
+    Statistics:  bootloader.STA

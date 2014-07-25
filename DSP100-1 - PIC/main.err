@@ -1,0 +1,66 @@
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\w25q80bv.c" Line 102(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\w25q80bv.c" Line 124(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\adc.c" Line 21(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\adc.c" Line 29(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\adc.c" Line 42(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\adc.c" Line 50(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\device_boot.c" Line 101(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\device_boot.c" Line 107(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\device_boot.c" Line 111(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\device_boot.c" Line 119(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\device_boot.c" Line 126(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\device_boot.c" Line 141(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\device_boot.c" Line 146(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\device_boot.c" Line 150(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\device_boot.c" Line 154(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\device_boot.c" Line 159(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\device_boot.c" Line 178(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\device_boot.c" Line 190(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\device_boot.c" Line 197(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\device_boot.c" Line 205(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\device_boot.c" Line 215(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\device_boot.c" Line 225(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\device_boot.c" Line 235(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\device_boot.c" Line 242(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\device_boot.c" Line 248(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\device_boot.c" Line 257(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\device_boot.c" Line 266(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\device_boot.c" Line 276(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\device_boot.c" Line 288(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\device_boot.c" Line 300(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\device_boot.c" Line 313(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\device_boot.c" Line 329(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\device_boot.c" Line 351(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\device_boot.c" Line 362(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\device_boot.c" Line 371(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\device_boot.c" Line 390(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\device_boot.c" Line 394(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\device_boot.c" Line 398(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\device_boot.c" Line 412(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\device_boot.c" Line 418(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\device_boot.c" Line 429(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\device_boot.c" Line 452(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\device_boot.c" Line 458(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\streaming.c" Line 168(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\interrupts.c" Line 36(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\interrupts.c" Line 77(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\interrupts.c" Line 98(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\interrupts.c" Line 102(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\interrupts.c" Line 139(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\interrupts.c" Line 153(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\interrupts.c" Line 182(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\DSP100-1 - PIC\interrupts.c" Line 191(1,1): Condition always FALSE
+>>> Warning 216 "main.c" Line 76(1,2): Interrupts disabled during call to prevent re-entrancy:  (@I2C_WRITE_1)
+>>> Warning 216 "main.c" Line 76(1,2): Interrupts disabled during call to prevent re-entrancy:  (i2c_write_4byte)
+>>> Warning 216 "main.c" Line 76(1,2): Interrupts disabled during call to prevent re-entrancy:  (send_dsp_command)
+>>> Warning 216 "main.c" Line 76(1,2): Interrupts disabled during call to prevent re-entrancy:  (RVC_to_dsp_value)
+>>> Warning 216 "main.c" Line 76(1,2): Interrupts disabled during call to prevent re-entrancy:  (@MULFF)
+>>> Warning 216 "main.c" Line 76(1,2): Interrupts disabled during call to prevent re-entrancy:  (@FTOSD)
+>>> Warning 216 "main.c" Line 76(1,2): Interrupts disabled during call to prevent re-entrancy:  (@ITOF)
+>>> Warning 216 "main.c" Line 76(1,2): Interrupts disabled during call to prevent re-entrancy:  (@ADDFF)
+>>> Warning 216 "main.c" Line 76(1,2): Interrupts disabled during call to prevent re-entrancy:  (@DIVFF)
+>>> Warning 216 "main.c" Line 76(1,2): Interrupts disabled during call to prevent re-entrancy:  (@SFTOI)
+>>> Warning 202 "C:\SOURCE\PIC\DSP100-1 - PIC\sa_usb.c" Line 16(65,72): Variable never used:   channel
+      Memory usage:   ROM=56%      RAM=45% - 51%
+      0 Errors,  63 Warnings.
+Build Successful.

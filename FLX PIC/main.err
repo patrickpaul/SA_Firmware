@@ -1,0 +1,75 @@
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\w25q80bv.c" Line 102(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\w25q80bv.c" Line 124(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\adc.c" Line 21(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\adc.c" Line 29(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\adc.c" Line 42(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\adc.c" Line 50(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\device_boot.c" Line 101(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\device_boot.c" Line 107(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\device_boot.c" Line 111(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\device_boot.c" Line 119(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\device_boot.c" Line 126(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\device_boot.c" Line 141(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\device_boot.c" Line 146(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\device_boot.c" Line 150(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\device_boot.c" Line 154(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\device_boot.c" Line 159(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\device_boot.c" Line 203(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\device_boot.c" Line 215(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\device_boot.c" Line 222(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\device_boot.c" Line 230(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\device_boot.c" Line 240(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\device_boot.c" Line 250(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\device_boot.c" Line 260(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\device_boot.c" Line 267(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\device_boot.c" Line 273(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\device_boot.c" Line 282(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\device_boot.c" Line 291(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\device_boot.c" Line 301(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\device_boot.c" Line 313(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\device_boot.c" Line 325(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\device_boot.c" Line 338(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\device_boot.c" Line 354(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\device_boot.c" Line 376(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\device_boot.c" Line 387(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\device_boot.c" Line 396(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\device_boot.c" Line 415(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\device_boot.c" Line 419(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\device_boot.c" Line 423(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\device_boot.c" Line 437(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\device_boot.c" Line 443(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\device_boot.c" Line 454(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\device_boot.c" Line 477(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\device_boot.c" Line 483(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\remote_volume.c" Line 46(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\remote_volume.c" Line 91(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\remote_volume.c" Line 138(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\remote_volume.c" Line 181(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\remote_volume.c" Line 217(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\remote_volume.c" Line 281(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\streaming.c" Line 168(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\rs232.c" Line 56(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\rs232.c" Line 261(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\interrupts.c" Line 36(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\interrupts.c" Line 77(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\interrupts.c" Line 98(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\interrupts.c" Line 102(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\interrupts.c" Line 139(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\interrupts.c" Line 153(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\interrupts.c" Line 182(1,1): Condition always FALSE
+>>> Warning 204 "C:\SOURCE\PIC\FLX PIC\interrupts.c" Line 191(1,1): Condition always FALSE
+>>> Warning 216 "main.c" Line 82(1,2): Interrupts disabled during call to prevent re-entrancy:  (@I2C_WRITE_1)
+>>> Warning 216 "main.c" Line 82(1,2): Interrupts disabled during call to prevent re-entrancy:  (i2c_write_4byte)
+>>> Warning 216 "main.c" Line 82(1,2): Interrupts disabled during call to prevent re-entrancy:  (send_dsp_command)
+>>> Warning 216 "main.c" Line 82(1,2): Interrupts disabled during call to prevent re-entrancy:  (RVC_to_dsp_value)
+>>> Warning 216 "main.c" Line 82(1,2): Interrupts disabled during call to prevent re-entrancy:  (@MULFF)
+>>> Warning 216 "main.c" Line 82(1,2): Interrupts disabled during call to prevent re-entrancy:  (@FTOSD)
+>>> Warning 216 "main.c" Line 82(1,2): Interrupts disabled during call to prevent re-entrancy:  (@ITOF)
+>>> Warning 216 "main.c" Line 82(1,2): Interrupts disabled during call to prevent re-entrancy:  (@DIVFF)
+>>> Warning 216 "main.c" Line 82(1,2): Interrupts disabled during call to prevent re-entrancy:  (@ADDFF)
+>>> Warning 216 "main.c" Line 82(1,2): Interrupts disabled during call to prevent re-entrancy:  (@SFTOI)
+>>> Warning 216 "main.c" Line 82(1,2): Interrupts disabled during call to prevent re-entrancy:  (@FLT)
+>>> Warning 202 "C:\SOURCE\PIC\FLX PIC\rs232.c" Line 3(22,38): Variable never used:   log_volume_index
+      Memory usage:   ROM=75%      RAM=53% - 59%
+      0 Errors,  72 Warnings.
+Build Successful.

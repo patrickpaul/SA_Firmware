@@ -1,0 +1,231 @@
+
+ROM used: 36014 (55%)
+          36018 (55%) including unused fragments
+
+          4 Average locations per line
+          12 Average locations per statement
+
+RAM used: 1752 (45%) at main() level
+          1972 (51%) worst case
+
+Stack used: 16 worst case (out of 31 total available)
+
+Lines Stmts  %   Files
+----- ----- ---  -----
+   75    11   0  main.c
+  604     0   0  18LF46K22.h
+ 2229   257   9  ..\..\..\Program Files (x86)\PICC\Drivers\math.h
+   44     0   0  DSP100_PINS.h
+   79     0   0  DSP1002_CONFIG.h
+   83     0   0  main.h
+ 1351   359  12  ..\..\..\Program Files (x86)\PICC\Drivers\STDLIB.H
+   32     0   0  ..\..\..\Program Files (x86)\PICC\Drivers\stddef.h
+  423   125   4  ..\..\..\Program Files (x86)\PICC\Drivers\string.h
+   28     0   0  ..\..\..\Program Files (x86)\PICC\Drivers\ctype.h
+  493     0   0  DSP_mapping.h
+  172    52   2  memory.c
+  796   314  10  w25q80bv.c
+   42     0   0  errorlist.h
+  273   154   5  dsp_comm.c
+    2     0   0  debug.c
+  576   516  17  eeprom.c
+   18     9   0  phantom.c
+   20     4   0  presets.c
+   56    28   1  adc.c
+  446   286  10  device_boot.c
+   69    37   1  timed_getc.c
+  199    86   3  streaming.c
+ 1124   652  22  sa_usb.c
+  202   118   4  interrupts.c
+----- -----
+ 9436  3008 Total
+
+Page ROM  %  RAM   Vol Diff  Functions:
+---- --- --- ---   --- ----  ----------
+0     40   0   1             @delay_ms1
+0    844   1  20  1121 10.1  CEIL_FLOOR
+0    122   0  10             @FLT
+0     60   0   4             @SFTOI
+0     54   0   2             @ITOF
+0    246   0  11             @MULFF
+0    632   1  16             @ADDFF
+0     26   0   4    43  2.1  floor
+0     28   0   4    44  1.9  ceil
+0    348   0  16   259  6.9  fmod
+0    350   0  14             @DIVFF
+0   1034   1  22  1071  8.0  exp
+0     80   0   2             @SITOF
+0    910   1  25   979 10.0  log
+0    780   1  12   556  7.5  pow
+0    106   0   3             @I2C_READ_1
+0    118   0   1             @I2C_WRITE_1
+0     70   0   1             @PUTCHAR_1_
+0     74   0   1             @GETCH_1_
+0     10   0   0             @PUTCHARI_BIU_2
+0     60   0   5             @SPI_XFER_1
+0    466   1   6  1282  6.4  WRITE_CONFIG_ADDRESS
+0    484   1   6  1285  4.7  READ_CONFIG_ADDRESS
+0    216   0  24   193  4.9  page_address
+0    108   0   1   223  2.3  flash_get_device_id
+0     52   0   1   121  2.2  flash_get_status
+0     10   0   1    30  1.0  flash_wait_while_busy
+0     26   0   0    61  1.2  flash_write_enable
+0     34   0   0             @const571
+0     34   0   2             @PSTRINGC_9600_31774_31775
+0      8   0   0             @const574
+0    218   0  18   508  4.7  flash_sector_erase
+0     54   0   0             @const617
+0     42   0   3             @PSTRINGCN_9600_31774_31775
+0     44   0   3             @DIV88
+0    126   0   2             @PRINTF_U_9600_31774_31775
+0    326   0   8   836  6.2  FLASH_ADDR_WRITE
+0    282   0   7   707  6.1  FLASH_ADDR_READ
+0    628   1   7  1276  5.1  FLASH_COPY_PROGRAM
+0     38   0   0             @const672
+0      8   0   0             @const678
+0     36   0   0             @const682
+0     60   0   0             @const690
+0     18   0   0             @const693
+0     42   0   2    43  1.8  addr_index_to_page_index
+0     18   0   2    43  1.8  addr_index_to_buffer_index
+0    236   0  14   542  6.1  read_flash_page_into_buffer
+0    278   0  15   597  6.0  write_buffer_to_flash_page
+0     82   0   4   246  6.2  write_buffer_to_stream
+0     74   0   6   313  3.1  i2c_write_4byte
+0    116   0   8   102  1.8  send_dsp_command
+0    194   0   9   197  3.5  send_prefixed_dsp_command
+0     20   0   0             @const758
+0    402   1   6   756  5.9  read_dsp_and_send_to_usb
+0      6   0   0             @const766
+0     20   0   0             @const769
+0     42   0   0    25  1.2  dsp_mute_outputs
+0     42   0   0    25  1.2  dsp_unmute_outputs
+0    378   1   9   729  7.0  send_flash_program_to_dsp_buffered
+0    112   0   9   192  5.5  write_int16_eeprom
+0     96   0  10   214  5.5  read_int16_eeprom
+0    110   0  13   291  6.0  INTEEPROM_GET
+0    112   0  12   316  6.0  INTEEPROM_PUT
+0  10656  15   0 30183  2.0  default_addr
+0    106   0   4   297  4.6  update_phantom_power
+0      4   0   0     3  0.0  save_flash_program
+0     68   0   1    86  2.1  switch_flash_program
+0    282   0   5   120  3.8  RVC_to_dsp_value
+0    242   0   5    83  3.2  RVC_to_decibel
+0    124   0   1   436  5.7  ADC_calibrate_min
+0     54   0   0             @const831
+0     16   0   0             @const832
+0    124   0   1   436  5.7  ADC_calibrate_max
+0     54   0   0             @const837
+0     16   0   0             @const838
+0    214   0   2  1092  5.9  default_device_config
+0     20   0   0             @const844
+0     26   0   0             @const847
+0     26   0   0             @const848
+0     26   0   0             @const849
+0     24   0   0             @const850
+0     36   0   0             @const851
+0     66   0   5             @FTOSD
+0     36   0   0             @const857
+0     28   0   0             @const858
+0     34   0   0             @const859
+0     38   0   0             @const860
+0     30   0   0             @const861
+0     38   0   0             @const862
+0     30   0   0             @const863
+0     32   0   0             @const864
+0     32   0   0             @const867
+0    372   1   1  1570  4.9  device_boot
+0     40   0   0             @const869
+0     10   0   0             @const870
+0     10   0   0             @const872
+0     30   0   0             @const874
+0     40   0   2             @PSTRINGR_9600_31774_31775
+0     58   0   0             @const876
+0      8   0   0             @const877
+0     46   0   0             @const878
+0     40   0   0             @const880
+0     34   0   0             @const881
+0     38   0   0             @const883
+0     44   0   0             @const884
+0      8   0   0             @const885
+0     38   0   0             @const886
+0   1142   2   4  3370  6.5  softboot
+0     40   0   0             @const887
+0     32   0   0             @const888
+0     50   0   0             @const889
+0     44   0   0             @const890
+0     34   0   0             @const891
+0     36   0   0             @const892
+0     24   0   0             @const893
+0     34   0   0             @const894
+0     52   0   0             @const895
+0     42   0   0             @const896
+0     46   0   0             @const897
+0     34   0   0             @const898
+0     30   0   0             @const899
+0     48   0   0             @const901
+0     40   0   0             @const902
+0    108   0   0  1657  4.4  setup_interrupts
+0     24   0   0             @const904
+0     24   0   0             @const905
+0     38   0   0             @const906
+0     58   0   0             @const907
+0     16   0   0             @const908
+0     70   0   0             @const909
+0     20   0   0             @const910
+0     70   0   0             @const911
+0     74   0   0             @const912
+0     74   0   0             @const913
+0     88   0   0   310  2.3  setup_peripherals
+0     82   0   2   280  5.5  timed_getc
+0     82   0   2   272  5.4  fast_timed_getc
+0     42   0   2   114  3.4  flush_nibble_buffer
+0     72   0   2   226  3.6  flush_stream_buffer
+0    170   0  11   400  7.7  calc_crc_int
+0     40   0   2   114  3.4  clear_nibble
+0     34   0   0   138  1.8  kill_stream
+0     12   0   0             @const955
+0    362   1  10  1743  7.6  perform_stream
+0     40   0   0             @const963
+0     26   0   0             @const964
+0     28   0   1    90  1.7  send_error
+0   5552   8  18 30822 18.4  process_usb_data
+0    246   0   9             @PRINTF_LD_512
+0     18   0   0   106  1.3  disable_all_timers
+0     24   0   0   145  1.8  enable_all_timers
+0     52   0   0   252  3.9  SLEEPTIMER_ISR
+0     64   0   0             @const1038
+0    738   1   4  1611  6.9  RVCTIMER_ISR
+0     32   0   0             @const1040
+0     36   0   0             @const1043
+0     34   0   0             @const1044
+0     70   0   0   612  3.8  AUDIODETECT_ISR
+0     50   0   0             @const1046
+0     58   0   0             @const1047
+0     44   0   0   391  3.2  USBDETECT_ISR
+0     68   0   0             @const1049
+0     70   0   0             @const1050
+0    282   0   0   131  2.1  MAIN
+ Inline        0             @cinit1
+
+Program metrics:
+    Functions               64
+    Statements              3008
+    Comments                2080
+    Volume (V)              137370
+    Difficulty (D)          296.9
+    Effort to implement (E) 40785826
+    Time to implement (T)   629 hours, 25 minutes
+    Est Delivered Bugs (B)  39
+    Cyclomatic Complexity   252
+    Maintainability (MI)    96
+
+ Segment     Used  Free
+-----------  ----  ----
+00000-007FE     0  2048  
+00800-00806     4  4  
+00808-008D0   202  0  
+008D2-0FFFE  35808  27470  
+
+
+

@@ -1,0 +1,341 @@
+CCS PCM C Compiler, Version 4.130, 13671               13-Mar-14 09:17
+
+               Filename: C:\SOURCE\PIC\NET AMPS RVC\main.lst
+
+               ROM used: 752 words (37%)
+                         Largest free fragment is 1296
+               RAM used: 4 (3%) at main() level
+                         27 (21%) worst case
+               Stack:    2 locations
+
+*
+0000:  MOVLW  02
+0001:  MOVWF  0A
+0002:  GOTO   261
+0003:  NOP
+.................... /******************************** 
+.................... Program Description: Code for Cobranet Amp's RVC input using ADC 
+.................... Author: Patrick Paul 
+.................... Company: Stewart Audio (c)2011 
+.................... Date: 12/12/11 
+.................... Rev: 1.1 
+....................  
+.................... All code copyright (c)2012 Stewart Audio. All rights reserved. 
+....................  
+.................... Changelog: 
+.................... 1.0 - Initial Release 
+.................... 1.1 - Added upper limit on ADC reading. After 240/255 (94%) it'll set to max 
+....................  
+.................... ********************************/ 
+....................  
+.................... #include <12F683.h>  
+.................... //////// Standard Header file for the PIC12F683 device //////////////// 
+.................... #device PIC12F683 
+.................... #list 
+....................  
+.................... #fuses NOWDT, INTRC_IO, NOCPD, NOPROTECT, MCLR, NOPUT  
+.................... #use delay (clock=8000000) 
+*
+024E:  MOVLW  2C
+024F:  MOVWF  04
+0250:  MOVF   00,W
+0251:  BTFSC  03.2
+0252:  GOTO   260
+0253:  MOVLW  02
+0254:  MOVWF  21
+0255:  CLRF   20
+0256:  DECFSZ 20,F
+0257:  GOTO   256
+0258:  DECFSZ 21,F
+0259:  GOTO   255
+025A:  MOVLW  97
+025B:  MOVWF  20
+025C:  DECFSZ 20,F
+025D:  GOTO   25C
+025E:  DECFSZ 00,F
+025F:  GOTO   253
+0260:  GOTO   2EE (RETURN)
+.................... #USE I2C(master, sda=PIN_A5, scl=PIN_A4) 
+*
+01F3:  MOVLW  08
+01F4:  MOVWF  21
+01F5:  NOP
+01F6:  BCF    05.4
+01F7:  BSF    03.5
+01F8:  BCF    05.4
+01F9:  NOP
+01FA:  BCF    03.5
+01FB:  RLF    2D,F
+01FC:  BCF    05.5
+01FD:  BTFSS  03.0
+01FE:  GOTO   202
+01FF:  BSF    03.5
+0200:  BSF    05.5
+0201:  BCF    03.5
+0202:  BTFSC  03.0
+0203:  GOTO   207
+0204:  BSF    03.5
+0205:  BCF    05.5
+0206:  BCF    03.5
+0207:  BSF    03.5
+0208:  BSF    05.4
+0209:  BCF    03.5
+020A:  BTFSS  05.4
+020B:  GOTO   20A
+020C:  DECFSZ 21,F
+020D:  GOTO   1F5
+020E:  NOP
+020F:  BCF    05.4
+0210:  BSF    03.5
+0211:  BCF    05.4
+0212:  NOP
+0213:  BSF    05.5
+0214:  NOP
+0215:  NOP
+0216:  BSF    05.4
+0217:  BCF    03.5
+0218:  BTFSS  05.4
+0219:  GOTO   218
+021A:  CLRF   21
+021B:  NOP
+021C:  BTFSC  05.5
+021D:  BSF    21.0
+021E:  BCF    05.4
+021F:  BSF    03.5
+0220:  BCF    05.4
+0221:  BCF    03.5
+0222:  BCF    05.5
+0223:  BSF    03.5
+0224:  BCF    05.5
+0225:  BCF    03.5
+0226:  RETURN
+....................  
+.................... void set_digital_pot(int data) { 
+....................  
+.................... 	i2c_start(); 
+0227:  BSF    03.5
+0228:  BSF    05.5
+0229:  NOP
+022A:  BSF    05.4
+022B:  NOP
+022C:  BCF    03.5
+022D:  BCF    05.5
+022E:  BSF    03.5
+022F:  BCF    05.5
+0230:  NOP
+0231:  BCF    03.5
+0232:  BCF    05.4
+0233:  BSF    03.5
+0234:  BCF    05.4
+.................... 	i2c_write(0x50); 
+0235:  MOVLW  50
+0236:  BCF    03.5
+0237:  MOVWF  2D
+0238:  CALL   1F3
+.................... 	i2c_write(0xAF); 
+0239:  MOVLW  AF
+023A:  MOVWF  2D
+023B:  CALL   1F3
+.................... 	i2c_write(data); 
+023C:  MOVF   2C,W
+023D:  MOVWF  2D
+023E:  CALL   1F3
+.................... 	i2c_stop(); 
+023F:  BSF    03.5
+0240:  BCF    05.5
+0241:  NOP
+0242:  BSF    05.4
+0243:  BCF    03.5
+0244:  BTFSS  05.4
+0245:  GOTO   244
+0246:  NOP
+0247:  GOTO   248
+0248:  NOP
+0249:  BSF    03.5
+024A:  BSF    05.5
+024B:  NOP
+....................  
+.................... } 
+024C:  BCF    03.5
+024D:  GOTO   2EB (RETURN)
+....................  
+.................... void main()  
+.................... {  
+*
+0261:  CLRF   04
+0262:  MOVLW  1F
+0263:  ANDWF  03,F
+0264:  MOVLW  71
+0265:  BSF    03.5
+0266:  MOVWF  0F
+0267:  MOVF   0F,W
+0268:  BCF    03.5
+0269:  BCF    1F.6
+026A:  BSF    03.5
+026B:  BCF    1F.0
+026C:  BCF    1F.1
+026D:  BCF    1F.2
+026E:  BCF    1F.3
+026F:  MOVLW  07
+0270:  BCF    03.5
+0271:  MOVWF  19
+....................      
+....................    	//setup_oscillator(OSC_8MHZ);   
+....................    	setup_adc(ADC_CLOCK_INTERNAL); 
+0272:  BSF    03.5
+0273:  BSF    1F.4
+0274:  BSF    1F.5
+0275:  BCF    1F.6
+0276:  BCF    03.5
+0277:  BCF    1F.7
+0278:  BSF    1F.0
+....................    	setup_adc_ports(sAN1); 
+0279:  BCF    1F.6
+027A:  BSF    03.5
+027B:  BCF    1F.0
+027C:  BSF    1F.1
+027D:  BCF    1F.2
+027E:  BCF    1F.3
+.................... 	set_adc_channel(1); 
+027F:  MOVLW  04
+0280:  BCF    03.5
+0281:  MOVWF  21
+0282:  MOVF   1F,W
+0283:  ANDLW  F3
+0284:  IORWF  21,W
+0285:  MOVWF  1F
+.................... 	setup_comparator(NC_NC); 
+0286:  MOVLW  07
+0287:  MOVWF  19
+0288:  BSF    03.5
+0289:  MOVF   05,W
+028A:  MOVWF  05
+028B:  MOVLW  06
+028C:  BCF    03.5
+028D:  MOVWF  20
+028E:  DECFSZ 20,F
+028F:  GOTO   28E
+0290:  NOP
+0291:  MOVF   19,W
+0292:  BCF    0C.3
+.................... 	int16 rvc_value = 0; 
+....................  
+.................... 	int pot_value; 
+.................... 	float pot_math; 
+0293:  CLRF   26
+0294:  CLRF   25
+....................  
+....................    setup_vref(FALSE); 
+0295:  BSF    03.5
+0296:  CLRF   19
+....................  
+....................    while (1)  
+....................    { 
+.................... 		rvc_value = read_adc(); 
+0297:  BCF    03.5
+0298:  BSF    1F.1
+0299:  BTFSC  1F.1
+029A:  GOTO   299
+029B:  MOVF   1E,W
+029C:  CLRF   26
+029D:  MOVWF  25
+.................... 		delay_us(20); 
+029E:  MOVLW  0D
+029F:  MOVWF  20
+02A0:  DECFSZ 20,F
+02A1:  GOTO   2A0
+.................... 		 
+....................  
+.................... 		if(rvc_value < 10) { 
+02A2:  MOVF   26,F
+02A3:  BTFSS  03.2
+02A4:  GOTO   2AC
+02A5:  MOVF   25,W
+02A6:  SUBLW  09
+02A7:  BTFSS  03.0
+02A8:  GOTO   2AC
+.................... 			pot_value = 64; 
+02A9:  MOVLW  40
+02AA:  MOVWF  27
+.................... 		} else if(rvc_value > 240) { 
+02AB:  GOTO   2E8
+02AC:  MOVF   26,F
+02AD:  BTFSS  03.2
+02AE:  GOTO   2B3
+02AF:  MOVF   25,W
+02B0:  SUBLW  F0
+02B1:  BTFSC  03.0
+02B2:  GOTO   2B5
+.................... 			pot_value = 0; 
+02B3:  CLRF   27
+.................... 		} else { 
+02B4:  GOTO   2E8
+.................... 			pot_value = (int)(65.84-(0.2582*rvc_value)); 
+02B5:  MOVF   26,W
+02B6:  MOVWF  2D
+02B7:  MOVF   25,W
+02B8:  MOVWF  2C
+02B9:  GOTO   004
+02BA:  MOVLW  CA
+02BB:  MOVWF  2F
+02BC:  MOVLW  32
+02BD:  MOVWF  2E
+02BE:  MOVLW  04
+02BF:  MOVWF  2D
+02C0:  MOVLW  7D
+02C1:  MOVWF  2C
+02C2:  MOVF   23,W
+02C3:  MOVWF  33
+02C4:  MOVF   22,W
+02C5:  MOVWF  32
+02C6:  MOVF   21,W
+02C7:  MOVWF  31
+02C8:  MOVF   20,W
+02C9:  MOVWF  30
+02CA:  GOTO   021
+02CB:  BSF    03.1
+02CC:  MOVLW  14
+02CD:  MOVWF  2F
+02CE:  MOVLW  AE
+02CF:  MOVWF  2E
+02D0:  MOVLW  03
+02D1:  MOVWF  2D
+02D2:  MOVLW  85
+02D3:  MOVWF  2C
+02D4:  MOVF   23,W
+02D5:  MOVWF  33
+02D6:  MOVF   22,W
+02D7:  MOVWF  32
+02D8:  MOVF   21,W
+02D9:  MOVWF  31
+02DA:  MOVF   20,W
+02DB:  MOVWF  30
+02DC:  GOTO   096
+02DD:  MOVF   23,W
+02DE:  MOVWF  2F
+02DF:  MOVF   22,W
+02E0:  MOVWF  2E
+02E1:  MOVF   21,W
+02E2:  MOVWF  2D
+02E3:  MOVF   20,W
+02E4:  MOVWF  2C
+02E5:  GOTO   1D4
+02E6:  MOVF   21,W
+02E7:  MOVWF  27
+.................... 		} 
+....................  
+.................... 		set_digital_pot(pot_value); 
+02E8:  MOVF   27,W
+02E9:  MOVWF  2C
+02EA:  GOTO   227
+.................... 		delay_ms(20);	 
+02EB:  MOVLW  14
+02EC:  MOVWF  2C
+02ED:  GOTO   24E
+....................    }  
+02EE:  GOTO   298
+.................... }  
+02EF:  SLEEP
+
+Configuration Fuses:
+   Word  1: 3FF4   INTRC_IO NOWDT NOPUT MCLR NOPROTECT NOCPD BROWNOUT IESO FCMEN

@@ -1,0 +1,792 @@
+CCS PCH C Compiler, Version 4.130, 13671               27-Jun-14 12:19
+
+               Filename: C:\SOURCE\PIC\BOOTLOADER\bootloader.lst
+
+               ROM used: 970 bytes (1%)
+                         Largest free fragment is 63484
+               RAM used: 6 (0%) at main() level
+                         82 (2%) worst case
+               Stack:    4 worst case (3 in main + 1 for interrupts)
+
+*
+00000:  GOTO   0372
+.................... #include <18LF46K22.h> 
+.................... //////// Standard Header file for the PIC18LF46K22 device //////////////// 
+.................... #device PIC18LF46K22 
+.................... #list 
+....................  
+.................... #device adc=8 
+....................  
+.................... #FUSES NOWDT                 	//No Watch Dog Timer 
+.................... #FUSES WDT128                	//Watch Dog Timer uses 1:128 Postscale 
+.................... #FUSES HSM                   	//High speed Osc, medium power 4MHz-16MHz 
+.................... #FUSES NOPLLEN               	//4X HW PLL disabled, 4X PLL enabled in software 
+.................... #FUSES PUT                   	//Power Up Timer 
+.................... #FUSES NOBROWNOUT            	//No brownout reset 
+.................... #FUSES WDT_SW                	//No Watch Dog Timer, enabled in Software 
+.................... #FUSES NOLVP                 	//No low voltage prgming, B3(PIC16) or B5(PIC18) used for I/O 
+.................... #FUSES NOXINST               	//Extended set extension and Indexed Addressing mode disabled (Legacy mode) 
+....................  
+.................... #use delay(clock=14745600) 
+....................  
+.................... #include "types.h" 
+.................... /*** FILEHEADER **************************************************************** 
+....................  * 
+....................  *	FILENAME:    types.h 
+....................  *	DATE:        21.11.2004 
+....................  *	AUTHOR:		 Christian Stadler 
+....................  * 
+....................  *	DESCRIPTION: Definition of common types. 
+....................  * 
+....................  ******************************************************************************/ 
+....................  
+.................... /*** HISTORY OF CHANGE ********************************************************* 
+....................  * 
+....................  *	$Log: /pic/_inc/types.h $ 
+....................  *  
+....................  * 3     1.11.10 11:42 Stadler 
+....................  * - type definitons dependend on compiler 
+....................  *  
+....................  * 2     26.02.05 18:44 Stadler 
+....................  * added bool type 
+....................  *  
+....................  ******************************************************************************/ 
+....................  
+.................... #ifndef _TYPES_H 
+.................... #define _TYPES_H 
+....................  
+.................... /*---------------------------------------------------------------------------*/ 
+.................... /* Type definitions for Microchip C18 Compiler                               */ 
+.................... /*---------------------------------------------------------------------------*/ 
+.................... #if defined(__18CXX) 
+....................  
+.................... typedef unsigned char bool; 
+.................... typedef signed char sint8; 
+.................... typedef signed int sint16; 
+.................... typedef signed long sint32; 
+.................... typedef unsigned char  uint8; 
+.................... typedef unsigned int uint16; 
+.................... typedef unsigned long uint32; 
+....................  
+.................... #endif /* #if defined(__18CXX) */ 
+....................  
+....................  
+....................  
+.................... /*---------------------------------------------------------------------------*/ 
+.................... /* Type definitions for CCS C Compiler                                       */ 
+.................... /*---------------------------------------------------------------------------*/ 
+.................... #if (defined(__PCB__) || defined(__PCH__) || defined(__PCM__)) 
+....................  
+.................... typedef int1 bool; 
+.................... typedef signed int8 sint8; 
+.................... typedef signed int16 sint16; 
+.................... typedef signed int32 sint32; 
+.................... typedef unsigned int8  uint8; 
+.................... typedef unsigned int16 uint16; 
+.................... typedef unsigned int32 uint32; 
+....................  
+.................... #endif /* (defined(__PCB__) || defined(__PCH__) || defined(__PCM__)) */ 
+....................  
+.................... #endif /*_TYPES_H */ 
+....................  
+....................  
+....................  
+.................... /* enable the following line to support lower case charachters in HEX file */ 
+.................... //#define BOOTLOADER_HEX_LOWERCASE 
+....................  
+.................... /* the following line enables the checksum check, disable to decrease the */ 
+.................... /* bootloader size */ 
+.................... #define BOOTLOADER_HEX_CHECKSUM 
+....................  
+.................... /* ------------------------------------------------------------------------- */ 
+.................... /* Intel HEX file record types                                               */ 
+.................... /* ------------------------------------------------------------------------- */ 
+.................... #define HEX_DATA_REC        0   /* data record */ 
+.................... #define HEX_EOF_REC         1   /* end of file record */ 
+.................... #define HEX_EXTADDR_REC     4   /* extened linear address record */ 
+....................  
+....................  
+.................... /* ------------------------------------------------------------------------- */ 
+.................... /* Intel HEX file section start offsets                                      */ 
+.................... /* ------------------------------------------------------------------------- */ 
+.................... #define HEX_LEN_START       1   /* start of record length */ 
+.................... #define HEX_ADDR_START      3   /* start of address */ 
+.................... #define HEX_TYPE_START      7   /* start of record type */ 
+.................... #define HEX_DATA_START      9   /* start of data */ 
+....................  
+.................... #define HEX_HEADER_LEN      4   /* lenght of lenght-, address- and type field in byte */ 
+....................  
+.................... #define HEX_LINE_LEN_MAX    50  /* maximum length a line in the HEX file */ 
+....................  
+....................  
+.................... #define ACK                 0x06    /* positive acknowledge (ACK) */ 
+.................... #define NAK                 0x15    /* negative acknowledge (NAK) */ 
+....................  
+....................  
+.................... /* ------------------------------------------------------------------------- */ 
+.................... /* Bootloader Address Mapping                                                */ 
+.................... /* ------------------------------------------------------------------------- */ 
+.................... #define BOOTLOADER_START        0x2A  
+.................... #define BOOTLOADER_END          0x3FF + 0x400  
+.................... #define RESET_VECTOR            0x400 + 0x400   
+.................... #define INTERRUPT_VECTOR_LOW    0x418 + 0x400   
+.................... #define INTERRUPT_VECTOR_HIGH   0x408 + 0x400   
+.................... #define APPLICATION_START       RESET_VECTOR  
+....................  
+.................... #ORG BOOTLOADER_START, BOOTLOADER_END auto=0 default  
+....................  
+.................... #define PIN_RS232_BOOT_TX      PIN_D6 
+.................... #define PIN_RS232_BOOT_RX      PIN_D7 
+....................  
+.................... #define PIN_USB_BOOT_TX			PIN_C6 
+.................... #define PIN_USB_BOOT_RX			PIN_C7	 
+....................  
+.................... /* RS232 configuration */ 
+.................... #use rs232(baud=57600,parity=N,xmit=PIN_USB_BOOT_TX,rcv=PIN_USB_BOOT_RX,bits=8,errors,stream=USB_BOOT,FORCE_SW) 
+*
+00042:  BSF    F94.7
+00044:  BTFSC  F82.7
+00046:  BRA    0044
+00048:  MOVLW  08
+0004A:  MOVWF  00
+0004C:  CLRF   47
+0004E:  BSF    00.7
+00050:  BRA    006E
+00052:  BCF    00.7
+00054:  BRA    006E
+00056:  BCF    FD8.0
+00058:  BTFSC  F82.7
+0005A:  BSF    FD8.0
+0005C:  RRCF   47,F
+0005E:  BSF    00.6
+00060:  BRA    006E
+00062:  BCF    00.6
+00064:  DECFSZ 00,F
+00066:  BRA    0056
+00068:  MOVFF  47,01
+0006C:  BRA    0084
+0006E:  MOVLW  0F
+00070:  BTFSC  00.7
+00072:  MOVLW  04
+00074:  MOVWF  01
+00076:  DECFSZ 01,F
+00078:  BRA    0076
+0007A:  BTFSC  00.7
+0007C:  BRA    0052
+0007E:  BTFSC  00.6
+00080:  BRA    0062
+00082:  BRA    0056
+00084:  RETURN 0
+*
+0012E:  BCF    F94.6
+00130:  BCF    F8B.6
+00132:  MOVLW  08
+00134:  MOVWF  01
+00136:  BRA    0138
+00138:  NOP   
+0013A:  BSF    01.7
+0013C:  BRA    015A
+0013E:  BCF    01.7
+00140:  RRCF   47,F
+00142:  BTFSC  FD8.0
+00144:  BSF    F8B.6
+00146:  BTFSS  FD8.0
+00148:  BCF    F8B.6
+0014A:  BSF    01.6
+0014C:  BRA    015A
+0014E:  BCF    01.6
+00150:  DECFSZ 01,F
+00152:  BRA    0140
+00154:  BRA    0156
+00156:  NOP   
+00158:  BSF    F8B.6
+0015A:  MOVLW  0F
+0015C:  MOVWF  FE9
+0015E:  DECFSZ FE9,F
+00160:  BRA    015E
+00162:  NOP   
+00164:  BTFSC  01.7
+00166:  BRA    013E
+00168:  BTFSC  01.6
+0016A:  BRA    014E
+0016C:  RETURN 0
+.................... #use rs232(baud=9600,parity=N,xmit=PIN_RS232_BOOT_TX,rcv=PIN_RS232_BOOT_RX,bits=8,errors, stream=RS232_BOOT) 
+*
+00086:  BTFSS  FA4.5
+00088:  BRA    0086
+0008A:  MOVFF  F71,04
+0008E:  MOVFF  F74,01
+00092:  BTFSS  04.1
+00094:  BRA    009A
+00096:  BCF    F71.4
+00098:  BSF    F71.4
+0009A:  RETURN 0
+....................  
+....................  
+.................... /* ========================================================================= */ 
+.................... /* get_hexbyte                                                               */ 
+.................... /* returns byte representation of 2 ASCII characters pointed to by *hex      */ 
+.................... /* ========================================================================= */ 
+.................... uint8 get_hexbyte(uint8 *hex) 
+.................... { 
+*
+0016E:  CLRF   4F
+....................     uint8 i; 
+....................     uint8 ret = 0; 
+....................     uint8 ch; 
+....................      
+....................     for (i=0; i < 2; i++) 
+00170:  CLRF   4E
+00172:  MOVF   4E,W
+00174:  SUBLW  01
+00176:  BNC   01B0
+....................     { 
+....................         /* take care of HEX files where lower case letters are used */ 
+....................         #ifdef BOOTLOADER_HEX_LOWERCASE 
+....................         ch = toupper(*hex); 
+....................         #else 
+....................         ch = *hex; 
+00178:  MOVFF  4C,FE9
+0017C:  MOVFF  4D,FEA
+00180:  MOVFF  FEF,50
+....................         #endif 
+....................          
+....................         /* convert character to integer value */ 
+....................         if (ch >= 'A') 
+00184:  MOVF   50,W
+00186:  SUBLW  40
+00188:  BC    0194
+....................         { 
+....................             ch = ch - 'A' + 10; 
+0018A:  MOVLW  41
+0018C:  SUBWF  50,W
+0018E:  ADDLW  0A
+00190:  MOVWF  50
+....................         } 
+....................         else 
+00192:  BRA    0198
+....................         { 
+....................             ch = ch - '0'; 
+00194:  MOVLW  30
+00196:  SUBWF  50,F
+....................         } 
+....................         ret = (ret << 4) | ch; 
+00198:  SWAPF  4F,W
+0019A:  MOVWF  00
+0019C:  MOVLW  F0
+0019E:  ANDWF  00,F
+001A0:  MOVF   00,W
+001A2:  IORWF  50,W
+001A4:  MOVWF  4F
+....................         hex++; 
+001A6:  INCF   4C,F
+001A8:  BTFSC  FD8.2
+001AA:  INCF   4D,F
+....................     } 
+001AC:  INCF   4E,F
+001AE:  BRA    0172
+....................      
+....................     return (ret); 
+001B0:  MOVFF  4F,01
+.................... } 
+001B4:  RETURN 0
+....................  
+....................  
+.................... /* ========================================================================= */ 
+.................... /* check_checksum                                                            */ 
+.................... /* calculates checksum for the received Intel HEX file line                  */ 
+.................... /* return: 0 = checksum ok                                                   */ 
+.................... /*         1 = checksum error                                                */ 
+.................... /* ========================================================================= */ 
+.................... #ifdef BOOTLOADER_HEX_CHECKSUM 
+.................... uint8 check_checksum(uint8 *hex, uint8 reclen) 
+.................... { 
+001B6:  CLRF   4A
+....................     uint8 checksum = 0; 
+....................     uint8 i; 
+....................  
+....................     // add all byte values, incl. checksum! 
+....................     for (i=0; i <= (reclen + HEX_HEADER_LEN); i++) 
+001B8:  CLRF   4B
+001BA:  MOVLW  04
+001BC:  ADDWF  49,W
+001BE:  SUBWF  4B,W
+001C0:  BZ    01C4
+001C2:  BC    01DE
+....................     { 
+....................         checksum += get_hexbyte(hex); 
+001C4:  MOVFF  48,4D
+001C8:  MOVFF  47,4C
+001CC:  RCALL  016E
+001CE:  MOVF   01,W
+001D0:  ADDWF  4A,F
+....................         hex += 2; 
+001D2:  MOVLW  02
+001D4:  ADDWF  47,F
+001D6:  MOVLW  00
+001D8:  ADDWFC 48,F
+....................     } 
+001DA:  INCF   4B,F
+001DC:  BRA    01BA
+....................  
+....................     // checksum is zero if checksum is correct 
+....................     return (checksum); 
+001DE:  MOVFF  4A,01
+.................... } 
+001E2:  RETURN 0
+.................... #endif /* BOOTLOADER_HEX_CHECKSUM */ 
+....................  
+....................  
+.................... /* ========================================================================= */ 
+.................... /* bootloader                                                                */ 
+.................... /* the bootloader itself.                                                    */ 
+.................... /* ========================================================================= */ 
+.................... void bootloader(void) 
+.................... { 
+*
+00246:  CLRF   0D
+00248:  BCF    44.0
+0024A:  CLRF   46
+0024C:  CLRF   45
+....................     uint32 addr; 
+....................     uint16 addr_low; 
+....................     uint8 addr_high = 0; 
+....................     uint8 reclen; 
+....................     uint8 rectype; 
+....................     uint8 idx; 
+....................     uint8 buffer[HEX_LINE_LEN_MAX]; 
+....................     uint8 ch; 
+....................     bool hexend = 0; 
+....................      
+....................     #if getenv("FLASH_ERASE_SIZE")>2 
+....................     uint16 next_addr = 0; 
+....................     #endif 
+....................  
+....................      
+....................     /* until end of HEX file */ 
+....................     while(hexend == 0) 
+....................     { 
+0024E:  BTFSC  44.0
+00250:  BRA    0370
+....................         /* get one line of the HEX file via RS232 until we receive CR or */ 
+....................         /* we reached the end of the buffer */ 
+....................         idx = 0; 
+00252:  CLRF   10
+....................         do 
+....................         { 
+....................              /* get one byte */ 
+....................              ch = fgetc(USB_BOOT); 
+00254:  RCALL  0042
+00256:  MOVFF  01,43
+....................              /* save to buffer */ 
+....................              buffer[idx] = ch; 
+0025A:  CLRF   03
+0025C:  MOVF   10,W
+0025E:  ADDLW  11
+00260:  MOVWF  FE9
+00262:  MOVLW  00
+00264:  ADDWFC 03,W
+00266:  MOVWF  FEA
+00268:  MOVFF  43,FEF
+....................              /* increment buffer index */ 
+....................              idx++; 
+0026C:  INCF   10,F
+....................         } 
+....................         while(ch != 0x0A); 
+0026E:  MOVF   43,W
+00270:  SUBLW  0A
+00272:  BNZ   0254
+....................  
+....................  
+....................         /* get record length */ 
+....................         reclen = get_hexbyte(&buffer[HEX_LEN_START]); 
+00274:  CLRF   4D
+00276:  MOVLW  12
+00278:  MOVWF  4C
+0027A:  RCALL  016E
+0027C:  MOVFF  01,0E
+....................  
+....................         /* check for proper checksum */ 
+....................         #ifdef BOOTLOADER_HEX_CHECKSUM 
+....................         if (check_checksum(&buffer[HEX_LEN_START], reclen) != 0) 
+00280:  CLRF   48
+00282:  MOVLW  12
+00284:  MOVWF  47
+00286:  MOVFF  0E,49
+0028A:  RCALL  01B6
+0028C:  MOVF   01,F
+0028E:  BZ    0298
+....................         { 
+....................             /* checkum error - send negative acknowledge */ 
+....................             fputc(NAK,USB_BOOT); 
+00290:  MOVLW  15
+00292:  MOVWF  47
+00294:  RCALL  012E
+....................         } 
+....................         else 
+00296:  BRA    036E
+....................         #endif /* BOOTLOADER_HEX_CHECKSUM */ 
+....................         { 
+....................             /* checkum ok */ 
+....................  
+....................             /* get address */ 
+....................             addr_low = make16(get_hexbyte(&buffer[HEX_ADDR_START]), 
+....................                               get_hexbyte(&buffer[HEX_ADDR_START+2])); 
+00298:  CLRF   4D
+0029A:  MOVLW  14
+0029C:  MOVWF  4C
+0029E:  RCALL  016E
+002A0:  MOVFF  01,47
+002A4:  CLRF   4D
+002A6:  MOVLW  16
+002A8:  MOVWF  4C
+002AA:  RCALL  016E
+002AC:  MOVFF  47,0C
+002B0:  MOVFF  01,0B
+....................  
+....................             /* make 32 bit address */ 
+....................             addr = make32(addr_high, addr_low); 
+002B4:  CLRF   0A
+002B6:  MOVFF  0D,09
+002BA:  MOVFF  0B,07
+002BE:  MOVFF  0C,08
+....................  
+....................             /* get record type */ 
+....................             rectype = get_hexbyte(&buffer[HEX_TYPE_START]); 
+002C2:  CLRF   4D
+002C4:  MOVLW  18
+002C6:  MOVWF  4C
+002C8:  RCALL  016E
+002CA:  MOVFF  01,0F
+....................              
+....................             if (rectype == HEX_DATA_REC) 
+002CE:  MOVF   0F,F
+002D0:  BNZ   034E
+....................             { 
+....................                 /* only program code memory */ 
+....................                 if ((addr_high < 0x30) && (addr >= RESET_VECTOR)) 
+002D2:  MOVF   0D,W
+002D4:  SUBLW  2F
+002D6:  BNC   034C
+002D8:  MOVF   0A,F
+002DA:  BNZ   02E6
+002DC:  MOVF   09,F
+002DE:  BNZ   02E6
+002E0:  MOVF   08,W
+002E2:  SUBLW  07
+002E4:  BC    034C
+....................                 { 
+....................                     for (idx=0; idx < reclen; idx++) 
+002E6:  CLRF   10
+002E8:  MOVF   0E,W
+002EA:  SUBWF  10,W
+002EC:  BC    0334
+....................                     { 
+....................                         buffer[idx] = get_hexbyte(&buffer[HEX_DATA_START+(idx*2)]); 
+002EE:  CLRF   03
+002F0:  MOVF   10,W
+002F2:  ADDLW  11
+002F4:  MOVWF  01
+002F6:  MOVLW  00
+002F8:  ADDWFC 03,F
+002FA:  MOVFF  01,47
+002FE:  MOVFF  03,48
+00302:  BCF    FD8.0
+00304:  RLCF   10,W
+00306:  ADDLW  09
+00308:  CLRF   03
+0030A:  ADDLW  11
+0030C:  MOVWF  01
+0030E:  MOVLW  00
+00310:  ADDWFC 03,F
+00312:  MOVFF  01,49
+00316:  MOVFF  03,4A
+0031A:  MOVFF  03,4D
+0031E:  MOVFF  01,4C
+00322:  RCALL  016E
+00324:  MOVFF  48,FEA
+00328:  MOVFF  47,FE9
+0032C:  MOVFF  01,FEF
+....................                     } 
+....................  
+....................                     #if getenv("FLASH_ERASE_SIZE") > getenv("FLASH_WRITE_SIZE") 
+00330:  INCF   10,F
+00332:  BRA    02E8
+....................                     #if defined(__PCM__) 
+....................                     if ((addr_low!=next_addr)&&(addr_low&(getenv("FLASH_ERASE_SIZE")-1)!=0)) 
+....................                     #else 
+....................                     if ((addr_low!=next_addr)&&(addr_low&(getenv("FLASH_ERASE_SIZE")/2-1)!=0)) 
+....................                     #endif 
+....................                         erase_program_eeprom(addr); 
+....................                     next_addr = addr_low + 1; 
+....................                     #endif 
+....................                     write_program_memory(addr, buffer, reclen); 
+00334:  MOVFF  09,FF8
+00338:  MOVFF  08,FF7
+0033C:  MOVFF  07,FF6
+00340:  CLRF   FEA
+00342:  MOVLW  11
+00344:  MOVWF  FE9
+00346:  MOVFF  0E,47
+0034A:  RCALL  0204
+....................                 } 
+....................             } 
+....................             else if (rectype == HEX_EOF_REC) 
+0034C:  BRA    0368
+0034E:  DECFSZ 0F,W
+00350:  BRA    0356
+....................             { 
+....................                 hexend = 1; 
+00352:  BSF    44.0
+....................             } 
+....................             else if (rectype == HEX_EXTADDR_REC) 
+00354:  BRA    0368
+00356:  MOVF   0F,W
+00358:  SUBLW  04
+0035A:  BNZ   0368
+....................             { 
+.................... 				//fprintf(RS232_BOOT,"Got extended address record\r\n"); 
+....................                 /* to save resources, only take lower byte - this */ 
+....................                 /* allows 24 bit addresses => enough for PIC18F */ 
+....................                 //addr_high = make16(get_hexbyte(&buffer[HEX_DATA_START]), 
+....................                 //                   get_hexbyte(&buffer[HEX_DATA_START+2])); 
+....................                 addr_high = get_hexbyte(&buffer[HEX_DATA_START+2]); 
+0035C:  CLRF   4D
+0035E:  MOVLW  1C
+00360:  MOVWF  4C
+00362:  RCALL  016E
+00364:  MOVFF  01,0D
+....................             } 
+....................              
+....................             /* send positive acknowledge */ 
+....................             fputc(ACK,USB_BOOT); 
+00368:  MOVLW  06
+0036A:  MOVWF  47
+0036C:  RCALL  012E
+....................         } 
+....................     } 
+0036E:  BRA    024E
+....................     
+....................    //write_eeprom(0x05,0x00); 
+....................     
+.................... } 
+00370:  RETURN 0
+....................  
+....................  
+.................... /* ========================================================================= */ 
+.................... /* application                                                               */ 
+.................... /* dummy application.                                                        */ 
+.................... /* ========================================================================= */ 
+.................... #ORG APPLICATION_START,APPLICATION_START+2 
+.................... void application(void) 
+.................... { 
+....................    	//write_eeprom(0x05,0x01); 
+....................    	while(1); 
+*
+00800:  BRA    0800
+.................... } 
+00802:  RETURN 0
+....................  
+....................  
+.................... /* ========================================================================= */ 
+.................... /* main                                                                      */ 
+.................... /* checks if bootloader shall be invoked or if it shall start the            */ 
+.................... /* application program.                                                      */ 
+.................... /* ========================================================================= */ 
+.................... #ORG BOOTLOADER_START 
+....................  
+.................... int timeout_error; 
+....................  
+.................... char timed_getc() { 
+....................  
+.................... 	int32 timeout; 
+....................  
+.................... 	timeout_error = FALSE; 
+*
+0009C:  CLRF   05
+.................... 	timeout = 0; 
+0009E:  CLRF   0A
+000A0:  CLRF   09
+000A2:  CLRF   08
+000A4:  CLRF   07
+....................  
+.................... 	while(!kbhit(USB_BOOT)&&!kbhit(RS232_BOOT)&&(++timeout<300000)) { // half a second 
+000A6:  BTFSS  F82.7
+000A8:  BRA    00E4
+000AA:  BTFSC  FA4.5
+000AC:  BRA    00E4
+000AE:  MOVLW  01
+000B0:  ADDWF  07,F
+000B2:  BTFSC  FD8.0
+000B4:  INCF   08,F
+000B6:  BTFSC  FD8.2
+000B8:  INCF   09,F
+000BA:  BTFSC  FD8.2
+000BC:  INCF   0A,F
+000BE:  MOVF   0A,F
+000C0:  BNZ   00E4
+000C2:  MOVF   09,W
+000C4:  SUBLW  04
+000C6:  BNC   00E4
+000C8:  BNZ   00D8
+000CA:  MOVF   08,W
+000CC:  SUBLW  93
+000CE:  BNC   00E4
+000D0:  BNZ   00D8
+000D2:  MOVF   07,W
+000D4:  SUBLW  DF
+000D6:  BNC   00E4
+.................... 		delay_us(5); // this polls at 10x the 9600 baud rate 
+000D8:  MOVLW  05
+000DA:  MOVWF  00
+000DC:  DECFSZ 00,F
+000DE:  BRA    00DC
+000E0:  BRA    00E2
+.................... 	} 
+000E2:  BRA    00A6
+....................  
+.................... 	if(kbhit(USB_BOOT)) { 
+000E4:  BTFSC  F82.7
+000E6:  BRA    00F2
+.................... 		timeout_error = FALSE; 
+000E8:  CLRF   05
+.................... 		return(fgetc(USB_BOOT)); 
+000EA:  RCALL  0042
+000EC:  MOVF   01,W
+000EE:  BRA    010A
+.................... 	} else if(kbhit(RS232_BOOT)) { 
+000F0:  BRA    010A
+000F2:  BTFSS  FA4.5
+000F4:  BRA    0100
+.................... 		timeout_error = FALSE; 
+000F6:  CLRF   05
+.................... 		return(fgetc(RS232_BOOT)); 
+000F8:  RCALL  0086
+000FA:  MOVF   01,W
+000FC:  BRA    010A
+.................... 	} else { 
+000FE:  BRA    010A
+.................... 		timeout_error = TRUE; 
+00100:  MOVLW  01
+00102:  MOVWF  05
+.................... 		return(0); 
+00104:  MOVLW  00
+00106:  MOVWF  01
+00108:  BRA    010A
+.................... 	} 
+.................... } 
+0010A:  RETURN 0
+....................  
+.................... void main() 
+.................... { 
+*
+00372:  CLRF   FF8
+00374:  BCF    FD0.7
+00376:  CLRF   FEA
+00378:  CLRF   FE9
+0037A:  BCF    F94.6
+0037C:  BSF    F8B.6
+0037E:  CLRF   04
+00380:  BCF    F70.3
+00382:  MOVLW  17
+00384:  MOVWF  F75
+00386:  MOVLW  A2
+00388:  MOVWF  F72
+0038A:  MOVLW  90
+0038C:  MOVWF  F71
+0038E:  MOVLB  1
+00390:  CLRF   x88
+00392:  MOVF   FC1,W
+00394:  ANDLW  F0
+00396:  MOVWF  FC1
+00398:  MOVLW  00
+0039A:  MOVLB  F
+0039C:  MOVWF  x38
+0039E:  MOVWF  x3C
+003A0:  MOVWF  x39
+003A2:  MOVWF  x3A
+003A4:  MOVWF  x3B
+003A6:  CLRF   F77
+003A8:  CLRF   F78
+003AA:  CLRF   F79
+....................     setup_adc(ADC_OFF); 
+003AC:  BCF    FC2.0
+....................  
+....................     char receive_char = timed_getc(); 
+003AE:  MOVLB  0
+003B0:  RCALL  009C
+003B2:  MOVFF  01,06
+....................  
+.................... 	if(receive_char == 0x55) { 
+003B6:  MOVF   06,W
+003B8:  SUBLW  55
+003BA:  BNZ   03DA
+.................... 		fprintf(RS232_BOOT,"Entering bootloader!\r\n"); 
+003BC:  MOVLW  2A
+003BE:  MOVWF  FF6
+003C0:  MOVLW  00
+003C2:  MOVWF  FF7
+003C4:  RCALL  010C
+.................... 		fputc(0x06,USB_BOOT); 
+003C6:  MOVLW  06
+003C8:  MOVWF  47
+003CA:  RCALL  012E
+.................... 		fputc(0x55,USB_BOOT); 
+003CC:  MOVLW  55
+003CE:  MOVWF  47
+003D0:  RCALL  012E
+.................... 		fputc(0x03,USB_BOOT); 
+003D2:  MOVLW  03
+003D4:  MOVWF  47
+003D6:  RCALL  012E
+....................         bootloader(); 
+003D8:  RCALL  0246
+....................     } 
+....................  
+....................     #asm 
+....................     goto RESET_VECTOR 
+003DA:  GOTO   0800
+....................     #endasm 
+.................... } 
+....................  
+....................  
+.................... /* ========================================================================= */ 
+.................... /* isr_low                                                                   */ 
+.................... /* remap interrupt vector low.                                               */ 
+.................... /* ========================================================================= */ 
+.................... #ORG 0x08, 0x17 
+.................... void isr_high(void) 
+003DE:  SLEEP 
+.................... { 
+....................     #asm 
+....................     goto INTERRUPT_VECTOR_HIGH 
+*
+00008:  GOTO   0808
+....................     #endasm 
+.................... } 
+0000C:  RETURN 0
+....................  
+....................  
+.................... /* ========================================================================= */ 
+.................... /* isr_high                                                                  */ 
+.................... /* remap interrupt vector high.                                              */ 
+.................... /* ========================================================================= */ 
+.................... #ORG 0x18, 0x29 
+.................... void isr_low(void) 
+.................... { 
+....................     #asm 
+....................     goto INTERRUPT_VECTOR_LOW 
+*
+00018:  GOTO   0818
+....................     #endasm 
+.................... } 
+0001C:  RETURN 0
+
+Configuration Fuses:
+   Word  1: E300   HSM NOPLLEN PRIMARY_ON FCMEN IESO
+   Word  2: 1E18   PUT NOBROWNOUT BORV19 WDT_SW WDT128
+   Word  3: BF00   CCP2C1 PBADEN CCP3B5 HFOFST TIMER3C0 CCP2D2 MCLR
+   Word  4: 0081   STVREN NOLVP NOXINST NODEBUG
+   Word  5: C00F   NOPROTECT NOCPB NOCPD
+   Word  6: E00F   NOWRT NOWRTC NOWRTB NOWRTD
+   Word  7: 400F   NOEBTR NOEBTRB
